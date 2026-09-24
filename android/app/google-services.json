@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "933319081492",
+    "project_id": "estoque-mais-d79b2",
+    "storage_bucket": "estoque-mais-d79b2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:933319081492:android:15443f957a8eccd5af3101",
+        "android_client_info": {
+          "package_name": "br.com.naraosio.estoque_mais"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCZpDbygjrr-dhZrTsp-oIBvkgA9bNEYIM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
