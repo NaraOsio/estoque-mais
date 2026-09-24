@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'cadastro_produto_page.dart';
+
 class ListaProdutosPage extends StatelessWidget {
   const ListaProdutosPage({super.key});
 
@@ -13,7 +15,13 @@ class ListaProdutosPage extends StatelessWidget {
         child: Text('Nenhum produto cadastrado'),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => const CadastroProdutoPage(),
+            ),
+          );
+        },
         child: const Icon(Icons.add),
       ),
     );
