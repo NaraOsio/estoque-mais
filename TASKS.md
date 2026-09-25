@@ -9,56 +9,78 @@ Status: feito
 Feito:
 - Firebase configurado no aplicativo.
 - Firebase inicializado no main.dart.
-- Aplicativo executado anteriormente no emulador sem erro de inicialização.
+- Aplicativo executado no emulador sem erro de inicialização.
 
 Aceite:
 - Firebase inicializa ao abrir o aplicativo.
 - O aplicativo abre no emulador sem erro de inicialização.
 
-- [ ] T2 - Criar repositório de autenticação
+- [x] T2 - Criar repositório de autenticação
 
-Status: em andamento
+Status: feito
+
+Feito:
+- Métodos para criar conta, entrar e sair criados.
+- Métodos ligados ao Firebase Authentication.
 
 Aceite:
 - O repositório possui métodos para criar conta, entrar e sair.
 - Os métodos usam Firebase Authentication.
 
-- [ ] T3 - Criar ViewModel de autenticação
+- [x] T3 - Criar ViewModel de autenticação
 
-Status: em andamento
+Status: feito
 
 Depende de: T2
+
+Feito:
+- A ViewModel usa o repositório de autenticação.
+- Validação de e-mail e senha criada.
+- Mensagens de erro criadas.
 
 Aceite:
 - A ViewModel usa o repositório de autenticação.
 - A ViewModel controla o estado da autenticação para a tela.
 
-- [ ] T4 - Criar tela de login
+- [x] T4 - Criar tela de login
 
-Status: em andamento
+Status: feito
 
 Depende de: T3
+
+Feito:
+- Tela com campos de e-mail e senha criada.
+- Tela possui botão para entrar e opção para criar conta.
 
 Aceite:
 - A tela possui campo de e-mail.
 - A tela possui campo de senha.
 - A tela possui botão para entrar.
 
-- [ ] T5 - Ligar a tela de login à autenticação
+- [x] T5 - Ligar a tela de login à autenticação
 
-Status: a fazer
+Status: feito
 
 Depende de: T3, T4
+
+Feito:
+- Botão chama a autenticação por e-mail e senha.
+- Mensagens de validação foram testadas no emulador.
 
 Aceite:
 - O botão de entrar chama a autenticação por e-mail e senha.
 - A tela mostra uma mensagem quando ocorrer erro.
 
-- [ ] T6 - Testar autenticação no emulador
+- [x] T6 - Testar autenticação no emulador
 
-Status: a fazer
+Status: feito
 
 Depende de: T5
+
+Feito:
+- Conta criada no aplicativo.
+- Entrada com e-mail e senha testada.
+- Saída da conta testada.
 
 Aceite:
 - Um usuário consegue criar uma conta.

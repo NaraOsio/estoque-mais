@@ -1,7 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
-import 'features/produtos/view/lista_produtos_page.dart';
+import 'features/autenticacao/view/login_page.dart';
 import 'firebase_options.dart';
 
 Future<void> main() async {
@@ -27,7 +27,7 @@ class EstoqueMaisApp extends StatelessWidget {
           seedColor: Colors.deepPurple,
         ),
       ),
-      home: const ListaProdutosPage(),
+      home: const LoginPage(),
     );
   }
 }
