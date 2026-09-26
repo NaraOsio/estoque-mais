@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 
+import '../model/usuario.dart';
 import '../repository/autenticacao_repository.dart';
 
 class AutenticacaoViewModel {
@@ -10,22 +11,50 @@ class AutenticacaoViewModel {
   }) : _repository = repository ?? AutenticacaoRepository();
 
   Future<String?> criarConta({
+    required String nome,
     required String email,
     required String senha,
   }) async {
-    final erro = _validar(email: email, senha: senha);
+    if (nome.trim().isEmpty) {
+      return 'Informe seu nome.';
+    }
+
+    final erro = _validarEmailESenha(
+      email: email,
+      senha: senha,
+    );
+
     if (erro != null) {
       return erro;
     }
 
     try {
-      await _repository.criarConta(
+      final credencial = await _repository.criarConta(
         email: email.trim(),
         senha: senha,
       );
+
+      final usuarioFirebase = credencial.user;
+
+      if (usuarioFirebase == null) {
+        return 'Não foi possível concluir a operação. Tente novamente.';
+      }
+
+      final usuario = Usuario(
+        id: usuarioFirebase.uid,
+        nome: nome.trim(),
+        email: usuarioFirebase.email ?? email.trim(),
+        perfil: 'comerciante',
+        ativo: true,
+      );
+
+      await _repository.salvarUsuario(usuario);
+
       return null;
     } on FirebaseAuthException catch (erro) {
       return _mensagemDoErro(erro);
+    } catch (_) {
+      return 'Não foi possível concluir a operação. Tente novamente.';
     }
   }
 
@@ -33,7 +62,11 @@ class AutenticacaoViewModel {
     required String email,
     required String senha,
   }) async {
-    final erro = _validar(email: email, senha: senha);
+    final erro = _validarEmailESenha(
+      email: email,
+      senha: senha,
+    );
+
     if (erro != null) {
       return erro;
     }
@@ -43,13 +76,14 @@ class AutenticacaoViewModel {
         email: email.trim(),
         senha: senha,
       );
+
       return null;
     } on FirebaseAuthException catch (erro) {
       return _mensagemDoErro(erro);
     }
   }
 
-  String? _validar({
+  String? _validarEmailESenha({
     required String email,
     required String senha,
   }) {

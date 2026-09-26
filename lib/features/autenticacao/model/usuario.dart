@@ -12,4 +12,14 @@ class Usuario {
     required this.perfil,
     required this.ativo,
   });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'nome': nome,
+      'email': email,
+      'perfil': perfil,
+      'ativo': ativo,
+    };
+  }
 }

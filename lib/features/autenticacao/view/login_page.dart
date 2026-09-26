@@ -11,6 +11,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final _nomeController = TextEditingController();
   final _emailController = TextEditingController();
   final _senhaController = TextEditingController();
   final _viewModel = AutenticacaoViewModel();
@@ -20,6 +21,7 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> _enviar() async {
     final erro = _emCadastro
         ? await _viewModel.criarConta(
+      nome: _nomeController.text,
       email: _emailController.text,
       senha: _senhaController.text,
     )
@@ -48,6 +50,7 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   void dispose() {
+    _nomeController.dispose();
     _emailController.dispose();
     _senhaController.dispose();
     super.dispose();
@@ -72,6 +75,16 @@ class _LoginPageState extends State<LoginPage> {
               style: Theme.of(context).textTheme.headlineMedium,
             ),
             const SizedBox(height: 24),
+            if (_emCadastro) ...[
+              TextField(
+                controller: _nomeController,
+                decoration: const InputDecoration(
+                  labelText: 'Nome',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
             TextField(
               controller: _emailController,
               keyboardType: TextInputType.emailAddress,
