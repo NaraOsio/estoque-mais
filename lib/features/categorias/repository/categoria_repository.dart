@@ -9,6 +9,10 @@ class CategoriaRepository {
     FirebaseFirestore? firestore,
   }) : _firestore = firestore ?? FirebaseFirestore.instance;
 
+  String gerarId() {
+    return _firestore.collection('categorias').doc().id;
+  }
+
   Future<void> salvar(Categoria categoria) {
     return _firestore
         .collection('categorias')
