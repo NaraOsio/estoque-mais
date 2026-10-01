@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../autenticacao/repository/autenticacao_repository.dart';
 import '../../autenticacao/view/login_page.dart';
+import '../../categorias/view/lista_categorias_page.dart';
 import 'cadastro_produto_page.dart';
 
 class ListaProdutosPage extends StatefulWidget {
@@ -35,6 +36,17 @@ class _ListaProdutosPageState extends State<ListaProdutosPage> {
       appBar: AppBar(
         title: const Text('Produtos'),
         actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const ListaCategoriasPage(),
+                ),
+              );
+            },
+            icon: const Icon(Icons.category_outlined),
+            tooltip: 'Categorias',
+          ),
           IconButton(
             onPressed: _sair,
             icon: const Icon(Icons.logout),
