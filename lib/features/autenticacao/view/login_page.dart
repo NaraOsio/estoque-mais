@@ -3,6 +3,11 @@ import 'package:flutter/material.dart';
 import '../../produtos/view/lista_produtos_page.dart';
 import '../view_model/autenticacao_view_model.dart';
 
+const _verdePrincipal = Color(0xFF2E7D32);
+const _laranjaDestaque = Color(0xFFF57C00);
+const _fundoClaro = Color(0xFFFFFBF5);
+const _textoSecundario = Color(0xFF5F6F5F);
+
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -48,6 +53,12 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+  void _trocarModo() {
+    setState(() {
+      _emCadastro = !_emCadastro;
+    });
+  }
+
   @override
   void dispose() {
     _nomeController.dispose();
@@ -58,68 +69,142 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    final titulo = _emCadastro ? 'Criar conta' : 'Entrar';
-    final textoBotao = _emCadastro ? 'Criar conta' : 'Entrar';
+    final tituloFormulario =
+    _emCadastro ? 'Crie sua conta' : 'Acesse sua conta';
+
+    final textoBotao =
+    _emCadastro ? 'Criar minha conta' : 'Entrar';
+
+    final textoAlternativo =
+    _emCadastro ? 'Já tenho uma conta' : 'Ainda não tenho uma conta';
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Estoque+'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(24),
+      backgroundColor: _fundoClaro,
+      body: SafeArea(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              titulo,
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-            const SizedBox(height: 24),
-            if (_emCadastro) ...[
-              TextField(
-                controller: _nomeController,
-                decoration: const InputDecoration(
-                  labelText: 'Nome',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 16),
-            ],
-            TextField(
-              controller: _emailController,
-              keyboardType: TextInputType.emailAddress,
-              decoration: const InputDecoration(
-                labelText: 'E-mail',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _senhaController,
-              obscureText: true,
-              decoration: const InputDecoration(
-                labelText: 'Senha',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 24),
-            SizedBox(
+            Container(
               width: double.infinity,
-              child: ElevatedButton(
-                onPressed: _enviar,
-                child: Text(textoBotao),
+              margin: const EdgeInsets.fromLTRB(2, 12, 2, 0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 25,
+                vertical: 30,
+              ),
+              decoration: BoxDecoration(
+                color: _verdePrincipal,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.16),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(
+                      Icons.inventory_2_outlined,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  const Text(
+                    'Estoque+',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
               ),
             ),
-            TextButton(
-              onPressed: () {
-                setState(() {
-                  _emCadastro = !_emCadastro;
-                });
-              },
-              child: Text(
-                _emCadastro
-                    ? 'Já tenho uma conta'
-                    : 'Ainda não tenho uma conta',
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(24, 42, 24, 24),
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 460),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(14),
+                        decoration: BoxDecoration(
+                          color: const Color(0x1AF57C00),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: const Icon(
+                          Icons.person_outline,
+                          color: _laranjaDestaque,
+                          size: 30,
+                        ),
+                      ),
+                      const SizedBox(height: 22),
+                      Text(
+                        tituloFormulario,
+                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                          color: _verdePrincipal,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        'Entre para organizar seus produtos e acompanhar seu estoque.',
+                        style: TextStyle(
+                          color: _textoSecundario,
+                          height: 1.4,
+                        ),
+                      ),
+                      const SizedBox(height: 32),
+                      if (_emCadastro) ...[
+                        TextField(
+                          controller: _nomeController,
+                          textCapitalization: TextCapitalization.words,
+                          decoration: const InputDecoration(
+                            labelText: 'Nome',
+                            prefixIcon: Icon(Icons.person_outline),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                      ],
+                      TextField(
+                        controller: _emailController,
+                        keyboardType: TextInputType.emailAddress,
+                        decoration: const InputDecoration(
+                          labelText: 'E-mail',
+                          prefixIcon: Icon(Icons.email_outlined),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      TextField(
+                        controller: _senhaController,
+                        obscureText: true,
+                        decoration: const InputDecoration(
+                          labelText: 'Senha',
+                          prefixIcon: Icon(Icons.lock_outline),
+                        ),
+                      ),
+                      const SizedBox(height: 28),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: _enviar,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: _laranjaDestaque,
+                          ),
+                          child: Text(textoBotao),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Center(
+                        child: TextButton(
+                          onPressed: _trocarModo,
+                          child: Text(textoAlternativo),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
           ],

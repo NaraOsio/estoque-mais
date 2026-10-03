@@ -68,3 +68,4 @@ git status
 - Movimentação e atualização da quantidade devem ocorrer juntas em uma transação do Cloud Firestore.
 - Não apagar, mover ou sobrescrever arquivos sem autorização.
 - Não inventar funcionalidades, arquivos, dados ou decisões fora do projeto.
+
