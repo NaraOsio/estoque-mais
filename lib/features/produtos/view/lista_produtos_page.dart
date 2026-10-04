@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../../autenticacao/repository/autenticacao_repository.dart';
 import '../../autenticacao/view/login_page.dart';
 import '../../categorias/view/lista_categorias_page.dart';
+import '../../movimentacoes/view/registrar_movimentacao_page.dart';
 import '../model/produto.dart';
 import '../view_model/produto_view_model.dart';
 import 'cadastro_produto_page.dart';
@@ -51,6 +52,23 @@ class _ListaProdutosPageState extends State<ListaProdutosPage> {
     }
   }
 
+  Future<void> _abrirMovimentacao() async {
+    final movimentacaoRegistrada =
+    await Navigator.of(context).push<bool>(
+      MaterialPageRoute(
+        builder: (context) => const RegistrarMovimentacaoPage(),
+      ),
+    );
+
+    if (!mounted) {
+      return;
+    }
+
+    if (movimentacaoRegistrada == true) {
+      setState(_carregarProdutos);
+    }
+  }
+
   Future<void> _abrirEdicaoProduto(Produto produto) async {
     final produtoAlterado = await Navigator.of(context).push<bool>(
       MaterialPageRoute(
@@ -90,6 +108,11 @@ class _ListaProdutosPageState extends State<ListaProdutosPage> {
       appBar: AppBar(
         title: const Text('Produtos'),
         actions: [
+          IconButton(
+            onPressed: _abrirMovimentacao,
+            icon: const Icon(Icons.swap_vert),
+            tooltip: 'Movimentar estoque',
+          ),
           IconButton(
             onPressed: () {
               Navigator.of(context).push(

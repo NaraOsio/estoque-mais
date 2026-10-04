@@ -102,7 +102,7 @@ class ProdutoViewModel {
       idCategoria: idCategoria,
       nome: nome.trim(),
       codigoBarras: produto.codigoBarras,
-      quantidadeAtual: int.parse(quantidadeInicialTexto),
+      quantidadeAtual: produto.quantidadeAtual,
       estoqueMinimo: int.parse(estoqueMinimoTexto),
       dataValidade: produto.dataValidade,
       exigeValidade: produto.exigeValidade,

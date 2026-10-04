@@ -182,10 +182,14 @@ class _CadastroProdutoPageState extends State<CadastroProdutoPage> {
             const SizedBox(height: 16),
             TextFormField(
               controller: _quantidadeInicialController,
+              readOnly: editando,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: 'Quantidade inicial',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: editando ? 'Quantidade atual' : 'Quantidade inicial',
+                border: const OutlineInputBorder(),
+                helperText: editando
+                    ? 'Altere a quantidade pela tela de movimentações.'
+                    : null,
               ),
             ),
             const SizedBox(height: 16),
