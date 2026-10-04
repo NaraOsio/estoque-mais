@@ -172,11 +172,21 @@ class _ListaProdutosPageState extends State<ListaProdutosPage> {
             separatorBuilder: (_, _) => const SizedBox(height: 8),
             itemBuilder: (context, indice) {
               final produto = produtos[indice];
+              final alerta = _produtoViewModel.obterAlertaEstoque(produto);
+              final corAlerta = produto.quantidadeAtual == 0
+                  ? Colors.red
+                  : Colors.orange;
 
               return Card(
                 child: ListTile(
                   onTap: () => _abrirEdicaoProduto(produto),
-                  title: Text(produto.nome),
+                  title: Text(
+                    alerta == null ? produto.nome : '${produto.nome} — $alerta',
+                    style: TextStyle(
+                      color: alerta == null ? null : corAlerta,
+                      fontWeight: alerta == null ? null : FontWeight.bold,
+                    ),
+                  ),
                   subtitle: Text(
                     'Quantidade: ${produto.quantidadeAtual}\n'
                         'Estoque mínimo: ${produto.estoqueMinimo}',

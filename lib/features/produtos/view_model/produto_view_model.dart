@@ -117,6 +117,17 @@ class ProdutoViewModel {
       return 'Não foi possível atualizar o produto. Tente novamente.';
     }
   }
+  String? obterAlertaEstoque(Produto produto) {
+    if (produto.quantidadeAtual == 0) {
+      return 'Sem estoque';
+    }
+
+    if (produto.quantidadeAtual <= produto.estoqueMinimo) {
+      return 'Estoque baixo';
+    }
+
+    return null;
+  }
 
   Future<List<Produto>> listarPorUsuario(String idUsuario) {
     return _repository.listarPorUsuario(idUsuario);
