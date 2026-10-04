@@ -17,6 +17,7 @@ class _ListaCategoriasPageState extends State<ListaCategoriasPage> {
   final _descricaoController = TextEditingController();
 
   late Future<List<Categoria>> _categoriasFuture;
+  Categoria? _categoriaEditando;
   bool _salvando = false;
 
   @override
@@ -40,6 +41,22 @@ class _ListaCategoriasPageState extends State<ListaCategoriasPage> {
         : _viewModel.listarPorUsuario(idUsuario);
   }
 
+  void _iniciarEdicao(Categoria categoria) {
+    setState(() {
+      _categoriaEditando = categoria;
+      _nomeController.text = categoria.nome;
+      _descricaoController.text = categoria.descricao ?? '';
+    });
+  }
+
+  void _cancelarEdicao() {
+    setState(() {
+      _categoriaEditando = null;
+      _nomeController.clear();
+      _descricaoController.clear();
+    });
+  }
+
   Future<void> _salvarCategoria() async {
     final idUsuario = FirebaseAuth.instance.currentUser?.uid;
 
@@ -54,8 +71,16 @@ class _ListaCategoriasPageState extends State<ListaCategoriasPage> {
       _salvando = true;
     });
 
-    final mensagemErro = await _viewModel.criarCategoria(
+    final categoriaEditando = _categoriaEditando;
+
+    final mensagemErro = categoriaEditando == null
+        ? await _viewModel.criarCategoria(
       idUsuario: idUsuario,
+      nome: _nomeController.text,
+      descricao: _descricaoController.text,
+    )
+        : await _viewModel.atualizarCategoria(
+      categoria: categoriaEditando,
       nome: _nomeController.text,
       descricao: _descricaoController.text,
     );
@@ -75,18 +100,27 @@ class _ListaCategoriasPageState extends State<ListaCategoriasPage> {
       return;
     }
 
+    final mensagemSucesso = categoriaEditando == null
+        ? 'Categoria salva com sucesso.'
+        : 'Categoria atualizada com sucesso.';
+
     _nomeController.clear();
     _descricaoController.clear();
 
-    setState(_carregarCategorias);
+    setState(() {
+      _categoriaEditando = null;
+      _carregarCategorias();
+    });
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Categoria salva com sucesso.')),
+      SnackBar(content: Text(mensagemSucesso)),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final editando = _categoriaEditando != null;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Categorias'),
@@ -95,19 +129,29 @@ class _ListaCategoriasPageState extends State<ListaCategoriasPage> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                editando ? 'Editar categoria' : 'Nova categoria',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            ),
+            const SizedBox(height: 12),
             TextField(
               controller: _nomeController,
+              textCapitalization: TextCapitalization.words,
               decoration: const InputDecoration(
                 labelText: 'Nome da categoria',
-                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.category_outlined),
               ),
             ),
             const SizedBox(height: 12),
             TextField(
               controller: _descricaoController,
+              textCapitalization: TextCapitalization.sentences,
               decoration: const InputDecoration(
                 labelText: 'Descrição (opcional)',
-                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.description_outlined),
               ),
             ),
             const SizedBox(height: 16),
@@ -116,11 +160,20 @@ class _ListaCategoriasPageState extends State<ListaCategoriasPage> {
               child: FilledButton(
                 onPressed: _salvando ? null : _salvarCategoria,
                 child: Text(
-                  _salvando ? 'Salvando...' : 'Salvar categoria',
+                  _salvando
+                      ? 'Salvando...'
+                      : editando
+                      ? 'Salvar alterações'
+                      : 'Salvar categoria',
                 ),
               ),
             ),
-            const SizedBox(height: 16),
+            if (editando)
+              TextButton(
+                onPressed: _salvando ? null : _cancelarEdicao,
+                child: const Text('Cancelar edição'),
+              ),
+            const SizedBox(height: 8),
             Expanded(
               child: FutureBuilder<List<Categoria>>(
                 future: _categoriasFuture,
@@ -149,17 +202,19 @@ class _ListaCategoriasPageState extends State<ListaCategoriasPage> {
 
                   return ListView.separated(
                     itemCount: categorias.length,
-                    separatorBuilder: (_, _) =>
-                    const SizedBox(height: 8),
+                    separatorBuilder: (_, _) => const SizedBox(height: 8),
                     itemBuilder: (context, indice) {
                       final categoria = categorias[indice];
 
                       return Card(
                         child: ListTile(
+                          onTap: () => _iniciarEdicao(categoria),
+                          leading: const Icon(Icons.category_outlined),
                           title: Text(categoria.nome),
                           subtitle: categoria.descricao == null
-                              ? null
+                              ? const Text('Sem descrição')
                               : Text(categoria.descricao!),
+                          trailing: const Icon(Icons.edit_rounded),
                         ),
                       );
                     },

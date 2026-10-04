@@ -38,6 +38,32 @@ class CategoriaViewModel {
       return 'Não foi possível salvar a categoria. Tente novamente.';
     }
   }
+  Future<String?> atualizarCategoria({
+    required Categoria categoria,
+    required String nome,
+    String? descricao,
+  }) async {
+    if (nome.trim().isEmpty) {
+      return 'Informe o nome da categoria.';
+    }
+
+    final descricaoLimpa = descricao?.trim();
+
+    final categoriaAtualizada = Categoria(
+      id: categoria.id,
+      idUsuario: categoria.idUsuario,
+      nome: nome.trim(),
+      descricao: descricaoLimpa?.isEmpty ?? true ? null : descricaoLimpa,
+      criadoEm: categoria.criadoEm,
+    );
+
+    try {
+      await _repository.salvar(categoriaAtualizada);
+      return null;
+    } catch (_) {
+      return 'Não foi possível atualizar a categoria. Tente novamente.';
+    }
+  }
 
   Future<List<Categoria>> listarPorUsuario(String idUsuario) {
     return _repository.listarPorUsuario(idUsuario);

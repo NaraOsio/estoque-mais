@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../produtos/view/lista_produtos_page.dart';
+import '../../produtos/view/dashboard_page.dart';
 import '../view_model/autenticacao_view_model.dart';
 
 const _verdePrincipal = Color(0xFF2E7D32);
@@ -48,7 +48,7 @@ class _LoginPageState extends State<LoginPage> {
 
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
-        builder: (context) => const ListaProdutosPage(),
+        builder: (context) => const DashboardPage(),
       ),
     );
   }

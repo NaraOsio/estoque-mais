@@ -10,6 +10,12 @@ import '../model/produto.dart';
 import '../view_model/produto_view_model.dart';
 import 'cadastro_produto_page.dart';
 
+enum _AcaoMenu {
+  historico,
+  categorias,
+  sair,
+}
+
 class ListaProdutosPage extends StatefulWidget {
   const ListaProdutosPage({super.key});
 
@@ -70,6 +76,22 @@ class _ListaProdutosPageState extends State<ListaProdutosPage> {
     }
   }
 
+  void _abrirHistorico() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const ListaMovimentacoesPage(),
+      ),
+    );
+  }
+
+  void _abrirCategorias() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const ListaCategoriasPage(),
+      ),
+    );
+  }
+
   Future<void> _abrirEdicaoProduto(Produto produto) async {
     final produtoAlterado = await Navigator.of(context).push<bool>(
       MaterialPageRoute(
@@ -103,6 +125,17 @@ class _ListaProdutosPageState extends State<ListaProdutosPage> {
     );
   }
 
+  void _executarAcaoMenu(_AcaoMenu acao) {
+    switch (acao) {
+      case _AcaoMenu.historico:
+        _abrirHistorico();
+      case _AcaoMenu.categorias:
+        _abrirCategorias();
+      case _AcaoMenu.sair:
+        _sair();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -111,36 +144,45 @@ class _ListaProdutosPageState extends State<ListaProdutosPage> {
         actions: [
           IconButton(
             onPressed: _abrirMovimentacao,
-            icon: const Icon(Icons.swap_vert),
+            icon: const Icon(Icons.swap_vert_rounded),
+            iconSize: 28,
             tooltip: 'Movimentar estoque',
           ),
-          IconButton(
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => const ListaMovimentacoesPage(),
+          PopupMenuButton<_AcaoMenu>(
+            onSelected: _executarAcaoMenu,
+            icon: const Icon(
+              Icons.more_vert_rounded,
+              size: 28,
+            ),
+            tooltip: 'Mais opções',
+            itemBuilder: (context) {
+              return const [
+                PopupMenuItem(
+                  value: _AcaoMenu.historico,
+                  child: _ItemMenu(
+                    icone: Icons.history_rounded,
+                    texto: 'Histórico',
+                  ),
                 ),
-              );
-            },
-            icon: const Icon(Icons.history_outlined),
-            tooltip: 'Histórico de movimentações',
-          ),
-          IconButton(
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => const ListaCategoriasPage(),
+                PopupMenuItem(
+                  value: _AcaoMenu.categorias,
+                  child: _ItemMenu(
+                    icone: Icons.category_rounded,
+                    texto: 'Categorias',
+                  ),
                 ),
-              );
+                PopupMenuItem(
+                  value: _AcaoMenu.sair,
+                  child: _ItemMenu(
+                    icone: Icons.logout_rounded,
+                    texto: 'Sair',
+                    cor: Colors.red,
+                  ),
+                ),
+              ];
             },
-            icon: const Icon(Icons.category_outlined),
-            tooltip: 'Categorias',
           ),
-          IconButton(
-            onPressed: _sair,
-            icon: const Icon(Icons.logout),
-            tooltip: 'Sair',
-          ),
+          const SizedBox(width: 4),
         ],
       ),
       body: FutureBuilder<List<Produto>>(
@@ -171,13 +213,11 @@ class _ListaProdutosPageState extends State<ListaProdutosPage> {
           return ListView.separated(
             padding: const EdgeInsets.all(16),
             itemCount: produtos.length,
-            separatorBuilder: (_, _) => const SizedBox(height: 8),
+            separatorBuilder: (_, _) => const SizedBox(height: 12),
             itemBuilder: (context, indice) {
               final produto = produtos[indice];
-
               final alertaEstoque =
               _produtoViewModel.obterAlertaEstoque(produto);
-
               final alertaValidade =
               _produtoViewModel.obterAlertaValidade(produto);
 
@@ -190,24 +230,87 @@ class _ListaProdutosPageState extends State<ListaProdutosPage> {
                   ? Colors.red
                   : Colors.orange;
 
+              final corDestaque = alertas.isEmpty
+                  ? Theme.of(context).colorScheme.primary
+                  : corAlerta;
+
               return Card(
+                margin: EdgeInsets.zero,
+                elevation: 1,
+                shadowColor: Colors.black26,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(18),
+                ),
                 child: ListTile(
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 10,
+                  ),
                   onTap: () => _abrirEdicaoProduto(produto),
-                  title: Text(
-                    alertas.isEmpty
-                        ? produto.nome
-                        : '${produto.nome} — ${alertas.join(' • ')}',
-                    style: TextStyle(
-                      color: alertas.isEmpty ? null : corAlerta,
-                      fontWeight:
-                      alertas.isEmpty ? null : FontWeight.bold,
+                  leading: CircleAvatar(
+                    radius: 22,
+                    backgroundColor: corDestaque.withValues(alpha: 0.12),
+                    child: Icon(
+                      Icons.inventory_2_outlined,
+                      color: corDestaque,
+                      size: 23,
                     ),
                   ),
-                  subtitle: Text(
-                    'Quantidade: ${produto.quantidadeAtual}\n'
-                        'Estoque mínimo: ${produto.estoqueMinimo}',
+                  title: Text(
+                    produto.nome,
+                    style: Theme.of(context).textTheme.titleMedium,
                   ),
-                  trailing: const Icon(Icons.edit_outlined),
+                  subtitle: Padding(
+                    padding: const EdgeInsets.only(top: 5),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Quantidade: ${produto.quantidadeAtual}',
+                        ),
+                        Text(
+                          'Estoque mínimo: ${produto.estoqueMinimo}',
+                        ),
+                        if (alertas.isNotEmpty) ...[
+                          const SizedBox(height: 9),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 9,
+                              vertical: 6,
+                            ),
+                            decoration: BoxDecoration(
+                              color: corAlerta.withValues(alpha: 0.10),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.info_outline_rounded,
+                                  color: corAlerta,
+                                  size: 17,
+                                ),
+                                const SizedBox(width: 6),
+                                Expanded(
+                                  child: Text(
+                                    alertas.join(' • '),
+                                    style: TextStyle(
+                                      color: corAlerta,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                  trailing: Icon(
+                    Icons.edit_rounded,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
                 ),
               );
             },
@@ -216,8 +319,43 @@ class _ListaProdutosPageState extends State<ListaProdutosPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _abrirCadastroProduto,
-        child: const Icon(Icons.add),
+        tooltip: 'Cadastrar produto',
+        child: const Icon(Icons.add_rounded),
       ),
+    );
+  }
+}
+
+class _ItemMenu extends StatelessWidget {
+  final IconData icone;
+  final String texto;
+  final Color? cor;
+
+  const _ItemMenu({
+    required this.icone,
+    required this.texto,
+    this.cor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final corFinal = cor ?? Theme.of(context).colorScheme.primary;
+
+    return Row(
+      children: [
+        Icon(
+          icone,
+          color: corFinal,
+        ),
+        const SizedBox(width: 12),
+        Text(
+          texto,
+          style: TextStyle(
+            color: corFinal,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
     );
   }
 }
