@@ -2,87 +2,44 @@
 
 ## Sprint 1 - Autenticação
 
-- [x] T1 - Configurar Firebase no aplicativo
+- [x] Configurar Firebase no aplicativo.
+- [x] Criar cadastro e login com e-mail e senha.
+- [x] Criar saída da conta.
+- [x] Testar autenticação no emulador.
 
-Status: feito
+## Sprint 2 - Categorias e produtos
 
-Feito:
-- Firebase configurado no aplicativo.
-- Firebase inicializado no main.dart.
-- Aplicativo executado no emulador sem erro de inicialização.
+- [x] Criar cadastro e listagem de categorias.
+- [x] Criar cadastro de produtos.
+- [x] Listar produtos do usuário autenticado.
+- [x] Editar nome, categoria e estoque mínimo do produto.
+- [x] Impedir alteração direta da quantidade na edição.
+- [x] Desativar produto sem apagar o documento.
+- [x] Ocultar produtos desativados da lista principal.
+- [x] Adicionar validade opcional ao produto.
 
-Aceite:
-- Firebase inicializa ao abrir o aplicativo.
-- O aplicativo abre no emulador sem erro de inicialização.
+## Sprint 3 - Movimentações e alertas
 
-- [x] T2 - Criar repositório de autenticação
+- [x] Registrar entrada de estoque.
+- [x] Registrar saída de estoque.
+- [x] Atualizar a quantidade por transação no Cloud Firestore.
+- [x] Bloquear saída maior que a quantidade disponível.
+- [x] Exibir histórico de movimentações.
+- [x] Alertar estoque baixo.
+- [x] Alertar produto sem estoque.
+- [x] Alertar produtos com validade em até 30 dias.
 
-Status: feito
+## Sprint 4 - Validação final
 
-Feito:
-- Métodos para criar conta, entrar e sair criados.
-- Métodos ligados ao Firebase Authentication.
+- [x] Testar login e logout no emulador.
+- [x] Testar bloqueio de saída maior que o estoque.
+- [x] Testar atualização da quantidade após movimentação.
+- [x] Testar histórico de movimentações.
+- [x] Executar `flutter analyze` sem erros.
+- [x] Atualizar README do projeto.
 
-Aceite:
-- O repositório possui métodos para criar conta, entrar e sair.
-- Os métodos usam Firebase Authentication.
+## Melhorias futuras
 
-- [x] T3 - Criar ViewModel de autenticação
-
-Status: feito
-
-Depende de: T2
-
-Feito:
-- A ViewModel usa o repositório de autenticação.
-- Validação de e-mail e senha criada.
-- Mensagens de erro criadas.
-
-Aceite:
-- A ViewModel usa o repositório de autenticação.
-- A ViewModel controla o estado da autenticação para a tela.
-
-- [x] T4 - Criar tela de login
-
-Status: feito
-
-Depende de: T3
-
-Feito:
-- Tela com campos de e-mail e senha criada.
-- Tela possui botão para entrar e opção para criar conta.
-
-Aceite:
-- A tela possui campo de e-mail.
-- A tela possui campo de senha.
-- A tela possui botão para entrar.
-
-- [x] T5 - Ligar a tela de login à autenticação
-
-Status: feito
-
-Depende de: T3, T4
-
-Feito:
-- Botão chama a autenticação por e-mail e senha.
-- Mensagens de validação foram testadas no emulador.
-
-Aceite:
-- O botão de entrar chama a autenticação por e-mail e senha.
-- A tela mostra uma mensagem quando ocorrer erro.
-
-- [x] T6 - Testar autenticação no emulador
-
-Status: feito
-
-Depende de: T5
-
-Feito:
-- Conta criada no aplicativo.
-- Entrada com e-mail e senha testada.
-- Saída da conta testada.
-
-Aceite:
-- Um usuário consegue criar uma conta.
-- Um usuário consegue entrar com e-mail e senha válidos.
-- Um usuário consegue sair da conta.
+- [ ] Adicionar imagem de produto com Firebase Storage.
+- [ ] Criar regras do Firebase Storage.
+- [ ] Criar testes automatizados.
