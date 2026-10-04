@@ -29,6 +29,8 @@ class _CadastroProdutoPageState extends State<CadastroProdutoPage> {
   late Future<List<Categoria>> _categoriasFuture;
   String? _idCategoriaSelecionada;
   bool _salvando = false;
+  bool _exigeValidade = false;
+  DateTime? _dataValidade;
 
   @override
   void initState() {
@@ -43,6 +45,8 @@ class _CadastroProdutoPageState extends State<CadastroProdutoPage> {
       _estoqueMinimoController.text =
           produto.estoqueMinimo.toString();
       _idCategoriaSelecionada = produto.idCategoria;
+      _exigeValidade = produto.exigeValidade;
+      _dataValidade = produto.dataValidade;
     }
 
     final idUsuario = FirebaseAuth.instance.currentUser?.uid;
@@ -50,6 +54,22 @@ class _CadastroProdutoPageState extends State<CadastroProdutoPage> {
     _categoriasFuture = idUsuario == null
         ? Future.value(<Categoria>[])
         : _categoriaViewModel.listarPorUsuario(idUsuario);
+  }
+  Future<void> _selecionarDataValidade() async {
+    final dataSelecionada = await showDatePicker(
+      context: context,
+      initialDate: _dataValidade ?? DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+
+    if (dataSelecionada == null || !mounted) {
+      return;
+    }
+
+    setState(() {
+      _dataValidade = dataSelecionada;
+    });
   }
 
   Future<void> _salvarProduto() async {
@@ -75,6 +95,8 @@ class _CadastroProdutoPageState extends State<CadastroProdutoPage> {
         nome: _nomeController.text,
         quantidadeInicialTexto: _quantidadeInicialController.text,
         estoqueMinimoTexto: _estoqueMinimoController.text,
+        exigeValidade: _exigeValidade,
+        dataValidade: _dataValidade,
       );
     } else {
       mensagemErro = await _produtoViewModel.atualizarProduto(
@@ -83,6 +105,8 @@ class _CadastroProdutoPageState extends State<CadastroProdutoPage> {
         nome: _nomeController.text,
         quantidadeInicialTexto: _quantidadeInicialController.text,
         estoqueMinimoTexto: _estoqueMinimoController.text,
+        exigeValidade: _exigeValidade,
+        dataValidade: _dataValidade,
       );
     }
 
@@ -108,6 +132,63 @@ class _CadastroProdutoPageState extends State<CadastroProdutoPage> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(mensagemSucesso)),
     );
+
+    Navigator.of(context).pop(true);
+  }
+  Future<void> _desativarProduto() async {
+    final produto = widget.produto;
+
+    if (produto == null) {
+      return;
+    }
+
+    final confirmar = await showDialog<bool>(
+      context: context,
+      builder: (contextoDialogo) {
+        return AlertDialog(
+          title: const Text('Desativar produto'),
+          content: Text(
+            'Deseja desativar o produto "${produto.nome}"?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(contextoDialogo).pop(false),
+              child: const Text('Cancelar'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(contextoDialogo).pop(true),
+              child: const Text('Desativar'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmar != true || !mounted) {
+      return;
+    }
+
+    setState(() {
+      _salvando = true;
+    });
+
+    final mensagemErro =
+    await _produtoViewModel.desativarProduto(produto);
+
+    if (!mounted) {
+      return;
+    }
+
+    setState(() {
+      _salvando = false;
+    });
+
+    if (mensagemErro != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(mensagemErro)),
+      );
+      return;
+    }
 
     Navigator.of(context).pop(true);
   }
@@ -201,6 +282,37 @@ class _CadastroProdutoPageState extends State<CadastroProdutoPage> {
                 border: OutlineInputBorder(),
               ),
             ),
+            const SizedBox(height: 8),
+            SwitchListTile(
+              contentPadding: EdgeInsets.zero,
+              title: const Text('Produto possui validade'),
+              value: _exigeValidade,
+              onChanged: _salvando
+                  ? null
+                  : (valor) {
+                setState(() {
+                  _exigeValidade = valor;
+
+                  if (!valor) {
+                    _dataValidade = null;
+                  }
+                });
+              },
+            ),
+            if (_exigeValidade) ...[
+              OutlinedButton.icon(
+                onPressed: _salvando ? null : _selecionarDataValidade,
+                icon: const Icon(Icons.calendar_today_outlined),
+                label: Text(
+                  _dataValidade == null
+                      ? 'Selecionar data de validade'
+                      : 'Validade: '
+                      '${_dataValidade!.day.toString().padLeft(2, '0')}/'
+                      '${_dataValidade!.month.toString().padLeft(2, '0')}/'
+                      '${_dataValidade!.year}',
+                ),
+              ),
+            ],
             const SizedBox(height: 24),
             SizedBox(
               width: double.infinity,
@@ -215,6 +327,19 @@ class _CadastroProdutoPageState extends State<CadastroProdutoPage> {
                 ),
               ),
             ),
+            if (editando) ...[
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton(
+                  onPressed: _salvando ? null : _desativarProduto,
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.red,
+                  ),
+                  child: const Text('Desativar produto'),
+                ),
+              ),
+            ],
           ],
         ),
       ),

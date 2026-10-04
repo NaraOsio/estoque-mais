@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import '../../autenticacao/repository/autenticacao_repository.dart';
 import '../../autenticacao/view/login_page.dart';
 import '../../categorias/view/lista_categorias_page.dart';
-import '../../movimentacoes/view/registrar_movimentacao_page.dart';
 import '../../movimentacoes/view/lista_movimentacoes_page.dart';
+import '../../movimentacoes/view/registrar_movimentacao_page.dart';
 import '../model/produto.dart';
 import '../view_model/produto_view_model.dart';
 import 'cadastro_produto_page.dart';
@@ -158,7 +158,9 @@ class _ListaProdutosPageState extends State<ListaProdutosPage> {
             );
           }
 
-          final produtos = resultado.data ?? [];
+          final produtos = (resultado.data ?? [])
+              .where((produto) => produto.ativo)
+              .toList();
 
           if (produtos.isEmpty) {
             return const Center(
@@ -172,8 +174,19 @@ class _ListaProdutosPageState extends State<ListaProdutosPage> {
             separatorBuilder: (_, _) => const SizedBox(height: 8),
             itemBuilder: (context, indice) {
               final produto = produtos[indice];
-              final alerta = _produtoViewModel.obterAlertaEstoque(produto);
-              final corAlerta = produto.quantidadeAtual == 0
+
+              final alertaEstoque =
+              _produtoViewModel.obterAlertaEstoque(produto);
+
+              final alertaValidade =
+              _produtoViewModel.obterAlertaValidade(produto);
+
+              final alertas = <String>[
+                ?alertaEstoque,
+                ?alertaValidade,
+              ];
+
+              final corAlerta = alertaEstoque == 'Sem estoque'
                   ? Colors.red
                   : Colors.orange;
 
@@ -181,10 +194,13 @@ class _ListaProdutosPageState extends State<ListaProdutosPage> {
                 child: ListTile(
                   onTap: () => _abrirEdicaoProduto(produto),
                   title: Text(
-                    alerta == null ? produto.nome : '${produto.nome} — $alerta',
+                    alertas.isEmpty
+                        ? produto.nome
+                        : '${produto.nome} — ${alertas.join(' • ')}',
                     style: TextStyle(
-                      color: alerta == null ? null : corAlerta,
-                      fontWeight: alerta == null ? null : FontWeight.bold,
+                      color: alertas.isEmpty ? null : corAlerta,
+                      fontWeight:
+                      alertas.isEmpty ? null : FontWeight.bold,
                     ),
                   ),
                   subtitle: Text(
