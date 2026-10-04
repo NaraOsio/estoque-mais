@@ -74,4 +74,32 @@ class MovimentacaoRepository {
       );
     });
   }
+  Future<List<Movimentacao>> listarPorUsuario(String idUsuario) async {
+    final resultado = await _firestore
+        .collection('movimentacoes')
+        .where('idUsuario', isEqualTo: idUsuario)
+        .get();
+
+    final movimentacoes = resultado.docs.map((documento) {
+      final dados = documento.data();
+
+      return Movimentacao(
+        id: dados['id'] as String,
+        idUsuario: dados['idUsuario'] as String,
+        idProduto: dados['idProduto'] as String,
+        tipo: dados['tipo'] as String,
+        quantidade: dados['quantidade'] as int,
+        motivo: dados['motivo'] as String?,
+        dataMovimentacao:
+        (dados['dataMovimentacao'] as Timestamp).toDate(),
+      );
+    }).toList();
+
+    movimentacoes.sort(
+          (primeira, segunda) =>
+          segunda.dataMovimentacao.compareTo(primeira.dataMovimentacao),
+    );
+
+    return movimentacoes;
+  }
 }

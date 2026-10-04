@@ -56,4 +56,7 @@ class MovimentacaoViewModel {
       return 'Não foi possível registrar a movimentação. Tente novamente.';
     }
   }
+  Future<List<Movimentacao>> listarPorUsuario(String idUsuario) {
+    return _repository.listarPorUsuario(idUsuario);
+  }
 }

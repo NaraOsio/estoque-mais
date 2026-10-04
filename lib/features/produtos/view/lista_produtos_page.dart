@@ -5,6 +5,7 @@ import '../../autenticacao/repository/autenticacao_repository.dart';
 import '../../autenticacao/view/login_page.dart';
 import '../../categorias/view/lista_categorias_page.dart';
 import '../../movimentacoes/view/registrar_movimentacao_page.dart';
+import '../../movimentacoes/view/lista_movimentacoes_page.dart';
 import '../model/produto.dart';
 import '../view_model/produto_view_model.dart';
 import 'cadastro_produto_page.dart';
@@ -112,6 +113,17 @@ class _ListaProdutosPageState extends State<ListaProdutosPage> {
             onPressed: _abrirMovimentacao,
             icon: const Icon(Icons.swap_vert),
             tooltip: 'Movimentar estoque',
+          ),
+          IconButton(
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const ListaMovimentacoesPage(),
+                ),
+              );
+            },
+            icon: const Icon(Icons.history_outlined),
+            tooltip: 'Histórico de movimentações',
           ),
           IconButton(
             onPressed: () {
