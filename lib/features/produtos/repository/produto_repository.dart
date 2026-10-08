@@ -20,6 +20,7 @@ class ProdutoRepository {
       'idCategoria': produto.idCategoria,
       'nome': produto.nome,
       'codigoBarras': produto.codigoBarras,
+      'precoVenda': produto.precoVenda,
       'quantidadeAtual': produto.quantidadeAtual,
       'estoqueMinimo': produto.estoqueMinimo,
       'dataValidade': produto.dataValidade == null
@@ -47,6 +48,7 @@ class ProdutoRepository {
         idCategoria: dados['idCategoria'] as String,
         nome: dados['nome'] as String,
         codigoBarras: dados['codigoBarras'] as String?,
+        precoVenda: (dados['precoVenda'] as num?)?.toDouble(),
         quantidadeAtual: dados['quantidadeAtual'] as int,
         estoqueMinimo: dados['estoqueMinimo'] as int,
         dataValidade: dataValidade is Timestamp

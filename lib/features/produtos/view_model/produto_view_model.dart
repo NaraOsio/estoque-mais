@@ -12,6 +12,7 @@ class ProdutoViewModel {
     required String nome,
     required String quantidadeInicialTexto,
     required String estoqueMinimoTexto,
+    required String precoVendaTexto,
   }) {
     if (nome.trim().isEmpty) {
       return 'Informe o nome do produto.';
@@ -27,6 +28,12 @@ class ProdutoViewModel {
       return 'Informe um estoque mínimo válido.';
     }
 
+    final precoVenda =
+    double.tryParse(precoVendaTexto.trim().replaceAll(',', '.'));
+    if (precoVenda == null || precoVenda < 0) {
+      return 'Informe um preço de venda válido.';
+    }
+
     return null;
   }
 
@@ -34,8 +41,10 @@ class ProdutoViewModel {
     required String idUsuario,
     required String idCategoria,
     required String nome,
+    String? codigoBarras,
     required String quantidadeInicialTexto,
     required String estoqueMinimoTexto,
+    required String precoVendaTexto,
     bool exigeValidade = false,
     DateTime? dataValidade,
   }) async {
@@ -51,6 +60,7 @@ class ProdutoViewModel {
       nome: nome,
       quantidadeInicialTexto: quantidadeInicialTexto,
       estoqueMinimoTexto: estoqueMinimoTexto,
+      precoVendaTexto: precoVendaTexto,
     );
 
     if (mensagemErro != null) {
@@ -61,11 +71,19 @@ class ProdutoViewModel {
       return 'Informe a data de validade.';
     }
 
+    final codigoBarrasLimpo = codigoBarras?.trim();
+    final precoVenda =
+    double.parse(precoVendaTexto.trim().replaceAll(',', '.'));
+
     final produto = Produto(
       id: _repository.gerarId(),
       idUsuario: idUsuario,
       idCategoria: idCategoria,
       nome: nome.trim(),
+      codigoBarras: codigoBarrasLimpo == null || codigoBarrasLimpo.isEmpty
+          ? null
+          : codigoBarrasLimpo,
+      precoVenda: precoVenda,
       quantidadeAtual: int.parse(quantidadeInicialTexto),
       estoqueMinimo: int.parse(estoqueMinimoTexto),
       dataValidade: exigeValidade ? dataValidade : null,
@@ -86,8 +104,10 @@ class ProdutoViewModel {
     required Produto produto,
     required String idCategoria,
     required String nome,
+    String? codigoBarras,
     required String quantidadeInicialTexto,
     required String estoqueMinimoTexto,
+    required String precoVendaTexto,
     bool? exigeValidade,
     DateTime? dataValidade,
   }) async {
@@ -99,6 +119,7 @@ class ProdutoViewModel {
       nome: nome,
       quantidadeInicialTexto: quantidadeInicialTexto,
       estoqueMinimoTexto: estoqueMinimoTexto,
+      precoVendaTexto: precoVendaTexto,
     );
 
     if (mensagemErro != null) {
@@ -117,12 +138,19 @@ class ProdutoViewModel {
       return 'Informe a data de validade.';
     }
 
+    final codigoBarrasLimpo = codigoBarras?.trim();
+    final precoVenda =
+    double.parse(precoVendaTexto.trim().replaceAll(',', '.'));
+
     final produtoAtualizado = Produto(
       id: produto.id,
       idUsuario: produto.idUsuario,
       idCategoria: idCategoria,
       nome: nome.trim(),
-      codigoBarras: produto.codigoBarras,
+      codigoBarras: codigoBarrasLimpo == null || codigoBarrasLimpo.isEmpty
+          ? null
+          : codigoBarrasLimpo,
+      precoVenda: precoVenda,
       quantidadeAtual: produto.quantidadeAtual,
       estoqueMinimo: int.parse(estoqueMinimoTexto),
       dataValidade: dataValidadeFinal,
@@ -138,6 +166,7 @@ class ProdutoViewModel {
       return 'Não foi possível atualizar o produto. Tente novamente.';
     }
   }
+
   Future<String?> desativarProduto(Produto produto) async {
     final produtoDesativado = Produto(
       id: produto.id,
@@ -145,6 +174,7 @@ class ProdutoViewModel {
       idCategoria: produto.idCategoria,
       nome: produto.nome,
       codigoBarras: produto.codigoBarras,
+      precoVenda: produto.precoVenda,
       quantidadeAtual: produto.quantidadeAtual,
       estoqueMinimo: produto.estoqueMinimo,
       dataValidade: produto.dataValidade,
@@ -160,6 +190,22 @@ class ProdutoViewModel {
       return 'Não foi possível desativar o produto. Tente novamente.';
     }
   }
+
+  Produto? buscarPorCodigo({
+    required List<Produto> produtos,
+    required String codigo,
+  }) {
+    final codigoLimpo = codigo.trim();
+
+    for (final produto in produtos) {
+      if (produto.ativo && produto.codigoBarras == codigoLimpo) {
+        return produto;
+      }
+    }
+
+    return null;
+  }
+
   String? obterAlertaEstoque(Produto produto) {
     if (produto.quantidadeAtual == 0) {
       return 'Sem estoque';
@@ -171,6 +217,7 @@ class ProdutoViewModel {
 
     return null;
   }
+
   String? obterAlertaValidade(Produto produto) {
     if (!produto.exigeValidade || produto.dataValidade == null) {
       return null;

@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'features/autenticacao/view/login_page.dart';
 import 'firebase_options.dart';
 
-const _verdePrincipal = Color(0xFF1B5E20);
+const _verdePrincipal = Color(0xFF1565C0);
 const _laranjaDestaque = Color(0xFFF57C00);
-const _fundoClaro = Color(0xFFF7FAF7);
+const _fundoClaro = Color(0xFFF5F9FF);
 const _cinzaBorda = Color(0xFFD7E1D7);
 const _textoPrincipal = Color(0xFF1F3323);
 const _textoSecundario = Color(0xFF617265);

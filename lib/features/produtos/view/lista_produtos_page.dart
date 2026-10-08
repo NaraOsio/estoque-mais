@@ -9,6 +9,7 @@ import '../../movimentacoes/view/registrar_movimentacao_page.dart';
 import '../model/produto.dart';
 import '../view_model/produto_view_model.dart';
 import 'cadastro_produto_page.dart';
+import 'leitor_codigo_page.dart';
 
 enum _AcaoMenu {
   historico,
@@ -142,6 +143,18 @@ class _ListaProdutosPageState extends State<ListaProdutosPage> {
       appBar: AppBar(
         title: const Text('Produtos'),
         actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const LeitorCodigoPage(),
+                ),
+              );
+            },
+            icon: const Icon(Icons.qr_code_scanner_rounded),
+            iconSize: 28,
+            tooltip: 'Consultar produto por código',
+          ),
           IconButton(
             onPressed: _abrirMovimentacao,
             icon: const Icon(Icons.swap_vert_rounded),

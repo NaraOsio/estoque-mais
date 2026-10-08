@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import '../../produtos/view/dashboard_page.dart';
 import '../view_model/autenticacao_view_model.dart';
 
-const _verdePrincipal = Color(0xFF2E7D32);
+const _verdePrincipal = Color(0xFF1565C0);
 const _laranjaDestaque = Color(0xFFF57C00);
-const _fundoClaro = Color(0xFFFFFBF5);
-const _textoSecundario = Color(0xFF5F6F5F);
+const _fundoClaro = Color(0xFFF5F9FF);
+const _textoSecundario = Color(0xFF52677D);
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -85,22 +85,28 @@ class _LoginPageState extends State<LoginPage> {
           children: [
             Container(
               width: double.infinity,
-              margin: const EdgeInsets.fromLTRB(2, 12, 2, 0),
+              margin: const EdgeInsets.fromLTRB(16, 14, 16, 0),
               padding: const EdgeInsets.symmetric(
                 horizontal: 25,
                 vertical: 30,
               ),
               decoration: BoxDecoration(
-                color: _verdePrincipal,
-                borderRadius: BorderRadius.circular(20),
+                gradient: const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Color(0xFF1E88E5),
+                    Color(0xFF0D47A1),
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(22),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
-                      Container(
-                        padding: const EdgeInsets.all(10),
+                      Container(padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
                           color: Colors.white.withValues(alpha: 0.16),
                           borderRadius: BorderRadius.circular(12),
@@ -108,6 +114,7 @@ class _LoginPageState extends State<LoginPage> {
                         child: const Icon(
                           Icons.inventory_2_outlined,
                           color: Colors.white,
+                          size: 32,
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -115,7 +122,7 @@ class _LoginPageState extends State<LoginPage> {
                         'Estoque+',
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 22,
+                          fontSize: 28,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -126,7 +133,7 @@ class _LoginPageState extends State<LoginPage> {
                     'Controle simples para o seu negócio',
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 14,
+                      fontSize: 16,
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -143,7 +150,10 @@ class _LoginPageState extends State<LoginPage> {
             ),
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(24, 42, 24, 24),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 25,
+                  vertical: 36,
+                ),
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 460),
                   child: Column(
@@ -166,6 +176,7 @@ class _LoginPageState extends State<LoginPage> {
                         tituloFormulario,
                         style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                           color: _verdePrincipal,
+                          fontSize: 28,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -212,7 +223,7 @@ class _LoginPageState extends State<LoginPage> {
                         child: ElevatedButton(
                           onPressed: _enviar,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: _laranjaDestaque,
+                            backgroundColor: _verdePrincipal,
                           ),
                           child: Text(textoBotao),
                         ),

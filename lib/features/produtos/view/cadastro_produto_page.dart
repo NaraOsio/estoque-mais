@@ -20,6 +20,8 @@ class CadastroProdutoPage extends StatefulWidget {
 
 class _CadastroProdutoPageState extends State<CadastroProdutoPage> {
   final _nomeController = TextEditingController();
+  final _codigoBarrasController = TextEditingController();
+  final _precoVendaController = TextEditingController();
   final _quantidadeInicialController = TextEditingController();
   final _estoqueMinimoController = TextEditingController();
 
@@ -40,6 +42,10 @@ class _CadastroProdutoPageState extends State<CadastroProdutoPage> {
 
     if (produto != null) {
       _nomeController.text = produto.nome;
+      _codigoBarrasController.text = produto.codigoBarras ?? '';
+      _precoVendaController.text = produto.precoVenda == null
+          ? ''
+          : produto.precoVenda!.toStringAsFixed(2).replaceAll('.', ',');
       _quantidadeInicialController.text =
           produto.quantidadeAtual.toString();
       _estoqueMinimoController.text =
@@ -55,6 +61,7 @@ class _CadastroProdutoPageState extends State<CadastroProdutoPage> {
         ? Future.value(<Categoria>[])
         : _categoriaViewModel.listarPorUsuario(idUsuario);
   }
+
   Future<void> _selecionarDataValidade() async {
     final dataSelecionada = await showDatePicker(
       context: context,
@@ -93,6 +100,8 @@ class _CadastroProdutoPageState extends State<CadastroProdutoPage> {
         idUsuario: idUsuario,
         idCategoria: _idCategoriaSelecionada ?? '',
         nome: _nomeController.text,
+        codigoBarras: _codigoBarrasController.text,
+        precoVendaTexto: _precoVendaController.text,
         quantidadeInicialTexto: _quantidadeInicialController.text,
         estoqueMinimoTexto: _estoqueMinimoController.text,
         exigeValidade: _exigeValidade,
@@ -103,6 +112,8 @@ class _CadastroProdutoPageState extends State<CadastroProdutoPage> {
         produto: widget.produto!,
         idCategoria: _idCategoriaSelecionada ?? '',
         nome: _nomeController.text,
+        codigoBarras: _codigoBarrasController.text,
+        precoVendaTexto: _precoVendaController.text,
         quantidadeInicialTexto: _quantidadeInicialController.text,
         estoqueMinimoTexto: _estoqueMinimoController.text,
         exigeValidade: _exigeValidade,
@@ -135,6 +146,7 @@ class _CadastroProdutoPageState extends State<CadastroProdutoPage> {
 
     Navigator.of(context).pop(true);
   }
+
   Future<void> _desativarProduto() async {
     final produto = widget.produto;
 
@@ -196,6 +208,8 @@ class _CadastroProdutoPageState extends State<CadastroProdutoPage> {
   @override
   void dispose() {
     _nomeController.dispose();
+    _codigoBarrasController.dispose();
+    _precoVendaController.dispose();
     _quantidadeInicialController.dispose();
     _estoqueMinimoController.dispose();
     super.dispose();
@@ -211,7 +225,7 @@ class _CadastroProdutoPageState extends State<CadastroProdutoPage> {
           editando ? 'Editar produto' : 'Cadastrar produto',
         ),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
@@ -219,6 +233,27 @@ class _CadastroProdutoPageState extends State<CadastroProdutoPage> {
               controller: _nomeController,
               decoration: const InputDecoration(
                 labelText: 'Nome do produto',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _codigoBarrasController,
+              decoration: const InputDecoration(
+                labelText: 'Código de barras ou QR Code',
+                helperText: 'Opcional. Pode ser preenchido pela câmera.',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _precoVendaController,
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
+              decoration: const InputDecoration(
+                labelText: 'Preço de venda',
+                prefixText: 'R\$ ',
                 border: OutlineInputBorder(),
               ),
             ),
@@ -266,7 +301,9 @@ class _CadastroProdutoPageState extends State<CadastroProdutoPage> {
               readOnly: editando,
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
-                labelText: editando ? 'Quantidade atual' : 'Quantidade inicial',
+                labelText: editando
+                    ? 'Quantidade atual'
+                    : 'Quantidade inicial',
                 border: const OutlineInputBorder(),
                 helperText: editando
                     ? 'Altere a quantidade pela tela de movimentações.'
