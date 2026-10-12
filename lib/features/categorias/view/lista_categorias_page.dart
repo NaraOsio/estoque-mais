@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../model/categoria.dart';
 import '../view_model/categoria_view_model.dart';
 
+
 class ListaCategoriasPage extends StatefulWidget {
   const ListaCategoriasPage({super.key});
 

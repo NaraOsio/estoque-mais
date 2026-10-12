@@ -107,6 +107,14 @@ class AutenticacaoViewModel {
       return 'E-mail ou senha incorretos.';
     }
 
+    if (erro.code == 'network-request-failed') {
+      return 'Sem conexão com a internet. Verifique sua rede e tente novamente.';
+    }
+
+    if (erro.code == 'invalid-email') {
+      return 'Informe um e-mail válido.';
+    }
+
     return 'Não foi possível concluir a operação. Tente novamente.';
   }
 }

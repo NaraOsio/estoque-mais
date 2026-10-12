@@ -121,6 +121,7 @@ class _RegistrarMovimentacaoPageState
               children: [
                 DropdownButtonFormField<String>(
                   initialValue: _idProdutoSelecionado,
+                  isExpanded: true,
                   decoration: const InputDecoration(
                     labelText: 'Produto',
                     border: OutlineInputBorder(),
@@ -130,6 +131,8 @@ class _RegistrarMovimentacaoPageState
                       value: produto.id,
                       child: Text(
                         '${produto.nome} (${produto.quantidadeAtual})',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     );
                   }).toList(),

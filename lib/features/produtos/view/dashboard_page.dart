@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
+import '../../autenticacao/view/login_page.dart';
 import '../../movimentacoes/model/movimentacao.dart';
 import '../../movimentacoes/view_model/movimentacao_view_model.dart';
 import '../model/produto.dart';
@@ -66,6 +66,32 @@ class _DashboardPageState extends State<DashboardPage> {
 
     setState(_carregarDados);
   }
+  Future<void> _sairDaConta() async {
+    try {
+      await FirebaseAuth.instance.signOut();
+
+      if (!mounted) {
+        return;
+      }
+
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(
+          builder: (context) => const LoginPage(),
+        ),
+            (rota) => false,
+      );
+    } catch (_) {
+      if (!mounted) {
+        return;
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Não foi possível sair. Tente novamente.'),
+        ),
+      );
+    }
+  }
 
   String _formatarData(DateTime data) {
     final dia = data.day.toString().padLeft(2, '0');
@@ -80,6 +106,18 @@ class _DashboardPageState extends State<DashboardPage> {
       appBar: AppBar(
         title: const Text('Visão geral'),
         actions: [
+          TextButton.icon(
+            onPressed: _sairDaConta,
+            icon: const Icon(
+              Icons.logout_rounded,
+              color: Colors.white,
+              size: 20,
+            ),
+            label: const Text(
+              'Sair',
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
           IconButton(
             onPressed: () {
               setState(_carregarDados);

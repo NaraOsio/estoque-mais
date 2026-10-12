@@ -42,6 +42,7 @@ class ProdutoViewModel {
     required String idCategoria,
     required String nome,
     String? codigoBarras,
+    String? imagemUrl,
     required String quantidadeInicialTexto,
     required String estoqueMinimoTexto,
     required String precoVendaTexto,
@@ -83,6 +84,7 @@ class ProdutoViewModel {
       codigoBarras: codigoBarrasLimpo == null || codigoBarrasLimpo.isEmpty
           ? null
           : codigoBarrasLimpo,
+      imagemUrl: imagemUrl,
       precoVenda: precoVenda,
       quantidadeAtual: int.parse(quantidadeInicialTexto),
       estoqueMinimo: int.parse(estoqueMinimoTexto),
@@ -105,6 +107,7 @@ class ProdutoViewModel {
     required String idCategoria,
     required String nome,
     String? codigoBarras,
+    String? imagemUrl,
     required String quantidadeInicialTexto,
     required String estoqueMinimoTexto,
     required String precoVendaTexto,
@@ -150,6 +153,7 @@ class ProdutoViewModel {
       codigoBarras: codigoBarrasLimpo == null || codigoBarrasLimpo.isEmpty
           ? null
           : codigoBarrasLimpo,
+      imagemUrl: imagemUrl,
       precoVenda: precoVenda,
       quantidadeAtual: produto.quantidadeAtual,
       estoqueMinimo: int.parse(estoqueMinimoTexto),
@@ -174,6 +178,7 @@ class ProdutoViewModel {
       idCategoria: produto.idCategoria,
       nome: produto.nome,
       codigoBarras: produto.codigoBarras,
+      imagemUrl: produto.imagemUrl,
       precoVenda: produto.precoVenda,
       quantidadeAtual: produto.quantidadeAtual,
       estoqueMinimo: produto.estoqueMinimo,

@@ -4,6 +4,7 @@ class Produto {
   final String idCategoria;
   final String nome;
   final String? codigoBarras;
+  final String? imagemUrl;
   final double? precoVenda;
   final int quantidadeAtual;
   final int estoqueMinimo;
@@ -18,6 +19,7 @@ class Produto {
     required this.idCategoria,
     required this.nome,
     this.codigoBarras,
+    this.imagemUrl,
     this.precoVenda,
     required this.quantidadeAtual,
     required this.estoqueMinimo,
