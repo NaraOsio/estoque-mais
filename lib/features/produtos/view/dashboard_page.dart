@@ -104,7 +104,13 @@ class _DashboardPageState extends State<DashboardPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Visão geral'),
+        title: const Text(
+          'Visão geral',
+          style: TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         actions: [
           TextButton.icon(
             onPressed: _sairDaConta,
@@ -171,14 +177,16 @@ class _DashboardPageState extends State<DashboardPage> {
             child: ListView(
               padding: const EdgeInsets.all(16),
               children: [
-                Text(
-                  'Resumo do estoque',
-                  style: Theme.of(context).textTheme.headlineSmall,
-                ),
-                const SizedBox(height: 6),
                 const Text(
-                  'Acompanhe os principais dados do seu negócio.',
+                  'Resumo do estoque',
+                  style: TextStyle(
+                    fontSize: 26,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF19334D),
+                  ),
                 ),
+                const SizedBox(height: 8),
+
                 const SizedBox(height: 20),
                 Row(
                   children: [
@@ -208,8 +216,27 @@ class _DashboardPageState extends State<DashboardPage> {
                 const SizedBox(height: 24),
                 FilledButton.icon(
                   onPressed: _abrirProdutos,
-                  icon: const Icon(Icons.inventory_2_rounded),
-                  label: const Text('Abrir produtos'),
+                  style: FilledButton.styleFrom(
+                    minimumSize: const Size(double.infinity, 56),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 16,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                  icon: const Icon(
+                    Icons.inventory_2_rounded,
+                    size: 24,
+                  ),
+                  label: const Text(
+                    'Abrir produtos',
+                    style: TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 28),
                 Text(
@@ -272,37 +299,59 @@ class _ResumoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      color: cor,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Icon(
+    final corEscura = Color.lerp(cor, Colors.black, 0.22)!;
+
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [cor, corEscura],
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: cor.withValues(alpha: 0.18),
+            blurRadius: 14,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.18),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(
               icone,
               color: Colors.white,
-              size: 28,
+              size: 25,
             ),
-            const SizedBox(height: 18),
-            Text(
-              valor,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-              ),
+          ),
+          const SizedBox(height: 18),
+          Text(
+            valor,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 34,
+              fontWeight: FontWeight.bold,
             ),
-            const SizedBox(height: 4),
-            Text(
-              titulo,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w600,
-              ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            titulo,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -322,28 +371,89 @@ class _MovimentacaoRecenteItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final entrada = movimentacao.tipo == 'entrada';
-    final cor = entrada ? Colors.green : Colors.red;
-    final icone = entrada
-        ? Icons.arrow_downward_rounded
-        : Icons.arrow_upward_rounded;
+    final cor = entrada
+        ? const Color(0xFF187544)
+        : const Color(0xFFB3261E);
 
-    return ListTile(
-      leading: CircleAvatar(
-        backgroundColor: cor.withValues(alpha: 0.12),
-        child: Icon(
-          icone,
-          color: cor,
-        ),
-      ),
-      title: Text(nomeProduto),
-      subtitle: Text('$dataFormatada • ${movimentacao.tipo}'),
-      trailing: Text(
-        '${entrada ? '+' : '-'}${movimentacao.quantidade}',
-        style: TextStyle(
-          color: cor,
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-        ),
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: cor.withValues(alpha: 0.10),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(
+              entrada
+                  ? Icons.arrow_downward_rounded
+                  : Icons.arrow_upward_rounded,
+              color: cor,
+              size: 26,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  nomeProduto,
+                  style: const TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF19334D),
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  dataFormatada,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: Color(0xFF52677D),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 5,
+                      ),
+                      decoration: BoxDecoration(
+                        color: cor.withValues(alpha: 0.10),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        entrada ? 'Entrada' : 'Saída',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: cor,
+                        ),
+                      ),
+                    ),
+                    Text(
+                      '${entrada ? '+' : '-'}'
+                          '${movimentacao.quantidade} unidade(s)',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: cor,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

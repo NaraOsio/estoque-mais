@@ -95,7 +95,10 @@ class ProdutoViewModel {
     );
 
     try {
-      await _repository.salvar(produto);
+      await _repository.salvar(
+        produto,
+        registrarEntradaInicial: true,
+      );
       return null;
     } catch (_) {
       return 'Não foi possível salvar o produto. Tente novamente.';

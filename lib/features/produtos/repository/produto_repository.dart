@@ -13,8 +13,15 @@ class ProdutoRepository {
     return _firestore.collection('produtos').doc().id;
   }
 
-  Future<void> salvar(Produto produto) {
-    return _firestore.collection('produtos').doc(produto.id).set({
+  Future<void> salvar(
+      Produto produto, {
+        bool registrarEntradaInicial = false,
+      }) async {
+    final lote = _firestore.batch();
+    final produtoRef =
+    _firestore.collection('produtos').doc(produto.id);
+
+    lote.set(produtoRef, {
       'id': produto.id,
       'idUsuario': produto.idUsuario,
       'idCategoria': produto.idCategoria,
@@ -31,6 +38,23 @@ class ProdutoRepository {
       'ativo': produto.ativo,
       'criadoEm': Timestamp.fromDate(produto.criadoEm),
     });
+
+    if (registrarEntradaInicial && produto.quantidadeAtual > 0) {
+      final movimentacaoRef =
+      _firestore.collection('movimentacoes').doc();
+
+      lote.set(movimentacaoRef, {
+        'id': movimentacaoRef.id,
+        'idUsuario': produto.idUsuario,
+        'idProduto': produto.id,
+        'tipo': 'entrada',
+        'quantidade': produto.quantidadeAtual,
+        'motivo': 'Estoque inicial do cadastro',
+        'dataMovimentacao': Timestamp.fromDate(produto.criadoEm),
+      });
+    }
+
+    await lote.commit();
   }
 
   Future<List<Produto>> listarPorUsuario(String idUsuario) async {

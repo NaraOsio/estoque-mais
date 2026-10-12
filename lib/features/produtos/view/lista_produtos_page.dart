@@ -251,78 +251,116 @@ class _ListaProdutosPageState extends State<ListaProdutosPage> {
                 margin: EdgeInsets.zero,
                 elevation: 1,
                 shadowColor: Colors.black26,
+                clipBehavior: Clip.antiAlias,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(18),
                 ),
-                child: ListTile(
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 10,
-                  ),
+                child: InkWell(
                   onTap: () => _abrirEdicaoProduto(produto),
-                  leading: CircleAvatar(
-                    radius: 22,
-                    backgroundColor: corDestaque.withValues(alpha: 0.12),
-                    child: Icon(
-                      Icons.inventory_2_outlined,
-                      color: corDestaque,
-                      size: 23,
-                    ),
-                  ),
-                  title: Text(
-                    produto.nome,
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  subtitle: Padding(
-                    padding: const EdgeInsets.only(top: 5),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Text(
-                          'Quantidade: ${produto.quantidadeAtual}',
-                        ),
-                        Text(
-                          'Estoque mínimo: ${produto.estoqueMinimo}',
-                        ),
-                        if (alertas.isNotEmpty) ...[
-                          const SizedBox(height: 9),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 9,
-                              vertical: 6,
+                        SizedBox(
+                          width: 88,
+                          height: 100,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: produto.imagemUrl != null &&
+                                produto.imagemUrl!.trim().isNotEmpty
+                                ? Image.network(
+                              produto.imagemUrl!,
+                              fit: BoxFit.contain,
+                              errorBuilder: (context, erro, pilha) {
+                                return Icon(
+                                  Icons.inventory_2_outlined,
+                                  color: corDestaque,
+                                  size: 32,
+                                );
+                              },
+                            )
+                                : Container(
+                              color: corDestaque.withValues(alpha: 0.12),
+                              child: Icon(
+                                Icons.inventory_2_outlined,
+                                color: corDestaque,
+                                size: 32,
+                              ),
                             ),
-                            decoration: BoxDecoration(
-                              color: corAlerta.withValues(alpha: 0.10),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.info_outline_rounded,
-                                  color: corAlerta,
-                                  size: 17,
+                          ),
+                        ),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                produto.nome,
+                                style: Theme.of(context).textTheme.titleMedium,
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                produto.precoVenda == null
+                                    ? 'Preço não informado'
+                                    : 'R\$ ${produto.precoVenda!.toStringAsFixed(2).replaceAll('.', ',')}',
+                                style: TextStyle(
+                                  color: Theme.of(context).colorScheme.primary,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
                                 ),
-                                const SizedBox(width: 6),
-                                Expanded(
-                                  child: Text(
-                                    alertas.join(' • '),
-                                    style: TextStyle(
-                                      color: corAlerta,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w700,
-                                    ),
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                'Quantidade: ${produto.quantidadeAtual}',
+                              ),
+                              Text(
+                                'Estoque mínimo: ${produto.estoqueMinimo}',
+                              ),
+                              if (alertas.isNotEmpty) ...[
+                                const SizedBox(height: 9),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 9,
+                                    vertical: 6,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: corAlerta.withValues(alpha: 0.10),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.info_outline_rounded,
+                                        color: corAlerta,
+                                        size: 17,
+                                      ),
+                                      const SizedBox(width: 6),
+                                      Expanded(
+                                        child: Text(
+                                          alertas.join(' • '),
+                                          style: TextStyle(
+                                            color: corAlerta,
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ],
-                            ),
+                            ],
                           ),
-                        ],
+                        ),
+                        const SizedBox(width: 8),
+                        Icon(
+                          Icons.edit_rounded,
+                          color: Theme.of(context).colorScheme.primary,
+                          size: 22,
+                        ),
                       ],
                     ),
-                  ),
-                  trailing: Icon(
-                    Icons.edit_rounded,
-                    color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
               );

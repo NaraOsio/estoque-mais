@@ -141,18 +141,87 @@ class _ListaCategoriasPageState extends State<ListaCategoriasPage> {
             TextField(
               controller: _nomeController,
               textCapitalization: TextCapitalization.words,
-              decoration: const InputDecoration(
+              style: const TextStyle(
+                fontSize: 17,
+                color: Color(0xFF19334D),
+              ),
+              decoration: InputDecoration(
                 labelText: 'Nome da categoria',
-                prefixIcon: Icon(Icons.category_outlined),
+                labelStyle: const TextStyle(
+                  fontSize: 16,
+                  color: Color(0xFF52677D),
+                ),
+                prefixIcon: const Icon(
+                  Icons.category_outlined,
+                  color: Color(0xFF1565C0),
+                ),
+                filled: true,
+                fillColor: Colors.white,
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 18,
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: const BorderSide(
+                    color: Color(0xFFDCE5EF),
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: const BorderSide(
+                    color: Color(0xFF1565C0),
+                    width: 1.5,
+                  ),
+                ),
               ),
             ),
             const SizedBox(height: 12),
             TextField(
               controller: _descricaoController,
               textCapitalization: TextCapitalization.sentences,
-              decoration: const InputDecoration(
+              minLines: 2,
+              maxLines: 3,
+              style: const TextStyle(
+                fontSize: 17,
+                color: Color(0xFF19334D),
+              ),
+              decoration: InputDecoration(
                 labelText: 'Descrição (opcional)',
-                prefixIcon: Icon(Icons.description_outlined),
+                alignLabelWithHint: true,
+                labelStyle: const TextStyle(
+                  fontSize: 16,
+                  color: Color(0xFF52677D),
+                ),
+                prefixIcon: const Icon(
+                  Icons.description_outlined,
+                  color: Color(0xFF1565C0),
+                ),
+                filled: true,
+                fillColor: Colors.white,
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 18,
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: const BorderSide(
+                    color: Color(0xFFDCE5EF),
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: const BorderSide(
+                    color: Color(0xFF1565C0),
+                    width: 1.5,
+                  ),
+                ),
               ),
             ),
             const SizedBox(height: 16),
@@ -160,6 +229,20 @@ class _ListaCategoriasPageState extends State<ListaCategoriasPage> {
               width: double.infinity,
               child: FilledButton(
                 onPressed: _salvando ? null : _salvarCategoria,
+                style: FilledButton.styleFrom(
+                  minimumSize: const Size(double.infinity, 56),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 16,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  textStyle: const TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
                 child: Text(
                   _salvando
                       ? 'Salvando...'
@@ -208,14 +291,62 @@ class _ListaCategoriasPageState extends State<ListaCategoriasPage> {
                       final categoria = categorias[indice];
 
                       return Card(
+                        margin: EdgeInsets.zero,
+                        color: Colors.white,
+                        surfaceTintColor: Colors.transparent,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          side: const BorderSide(
+                            color: Color(0xFFDCE5EF),
+                          ),
+                        ),
+                        clipBehavior: Clip.antiAlias,
                         child: ListTile(
                           onTap: () => _iniciarEdicao(categoria),
-                          leading: const Icon(Icons.category_outlined),
-                          title: Text(categoria.nome),
-                          subtitle: categoria.descricao == null
-                              ? const Text('Sem descrição')
-                              : Text(categoria.descricao!),
-                          trailing: const Icon(Icons.edit_rounded),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 10,
+                          ),
+                          leading: Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFEAF2FF),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const Icon(
+                              Icons.category_outlined,
+                              color: Color(0xFF1565C0),
+                              size: 24,
+                            ),
+                          ),
+                          title: Text(
+                            categoria.nome,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFF19334D),
+                            ),
+                          ),
+                          subtitle: Padding(
+                            padding: const EdgeInsets.only(top: 6),
+                            child: Text(
+                              categoria.descricao == null ||
+                                  categoria.descricao!.trim().isEmpty
+                                  ? 'Sem descrição'
+                                  : categoria.descricao!,
+                              style: const TextStyle(
+                                fontSize: 15,
+                                height: 1.4,
+                                color: Color(0xFF52677D),
+                              ),
+                            ),
+                          ),
+                          trailing: const Icon(
+                            Icons.edit_outlined,
+                            color: Color(0xFF1565C0),
+                            size: 22,
+                          ),
                         ),
                       );
                     },
