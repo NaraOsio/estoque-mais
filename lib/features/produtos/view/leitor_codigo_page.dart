@@ -4,6 +4,7 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 
 import '../model/produto.dart';
 import '../view_model/produto_view_model.dart';
+import 'cadastro_produto_page.dart';
 
 class LeitorCodigoPage extends StatefulWidget {
   const LeitorCodigoPage({super.key});
@@ -19,6 +20,8 @@ class _LeitorCodigoPageState extends State<LeitorCodigoPage> {
 
   Produto? _produtoEncontrado;
   String? _mensagem;
+  String? _codigoLido;
+  bool _produtoNaoCadastrado = false;
   bool _processandoLeitura = false;
 
   Future<void> _lerCodigo(BarcodeCapture captura) async {
@@ -39,6 +42,8 @@ class _LeitorCodigoPageState extends State<LeitorCodigoPage> {
       _processandoLeitura = true;
       _mensagem = null;
       _produtoEncontrado = null;
+      _codigoLido = codigo.trim();
+      _produtoNaoCadastrado = false;
     });
 
     try {
@@ -73,6 +78,7 @@ class _LeitorCodigoPageState extends State<LeitorCodigoPage> {
 
       setState(() {
         _produtoEncontrado = produto;
+        _produtoNaoCadastrado = produto == null;
         _mensagem = produto == null
             ? 'Produto não cadastrado para este código.'
             : null;
@@ -98,6 +104,8 @@ class _LeitorCodigoPageState extends State<LeitorCodigoPage> {
     setState(() {
       _produtoEncontrado = null;
       _mensagem = null;
+      _codigoLido = null;
+      _produtoNaoCadastrado = false;
       _processandoLeitura = false;
     });
 
@@ -118,6 +126,45 @@ class _LeitorCodigoPageState extends State<LeitorCodigoPage> {
       setState(() {
         _mensagem = 'Não foi possível abrir a câmera.';
       });
+    }
+  }
+  Future<void> _cadastrarProduto() async {
+    final codigo = _codigoLido;
+
+    if (codigo == null ||
+        !_produtoNaoCadastrado ||
+        _processandoLeitura) {
+      return;
+    }
+
+    setState(() {
+      _processandoLeitura = true;
+    });
+
+    bool? salvou;
+
+    try {
+      salvou = await Navigator.of(context).push<bool>(
+        MaterialPageRoute(
+          builder: (context) => CadastroProdutoPage(
+            codigoInicial: codigo,
+          ),
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _processandoLeitura = false;
+        });
+      }
+    }
+
+    if (!mounted) {
+      return;
+    }
+
+    if (salvou == true) {
+      await _lerOutroCodigo();
     }
   }
 
@@ -225,6 +272,21 @@ class _LeitorCodigoPageState extends State<LeitorCodigoPage> {
                   'Aponte a câmera para o código do produto.',
               textAlign: TextAlign.center,
             ),
+            if (_produtoNaoCadastrado) ...[
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton.icon(
+                  onPressed:
+                  _processandoLeitura ? null : _cadastrarProduto,
+                  icon: const Icon(Icons.add),
+                  label: const Text('Cadastrar este produto'),
+                  style: FilledButton.styleFrom(
+                    minimumSize: const Size(0, 56),
+                  ),
+                ),
+              ),
+            ],
             if (_mensagem != null) ...[
               const SizedBox(height: 16),
               OutlinedButton.icon(

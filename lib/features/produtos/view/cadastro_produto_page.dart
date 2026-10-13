@@ -8,14 +8,18 @@ import '../../categorias/model/categoria.dart';
 import '../../categorias/view_model/categoria_view_model.dart';
 import '../model/produto.dart';
 import '../services/cloudinary_service.dart';
+import '../services/open_food_facts_service.dart';
 import '../view_model/produto_view_model.dart';
+
 
 class CadastroProdutoPage extends StatefulWidget {
   final Produto? produto;
+  final String? codigoInicial;
 
   const CadastroProdutoPage({
     super.key,
     this.produto,
+    this.codigoInicial,
   });
 
   @override
@@ -35,46 +39,139 @@ class _CadastroProdutoPageState extends State<CadastroProdutoPage> {
   final _imagePicker = ImagePicker();
 
   XFile? _imagemSelecionada;
+  final _openFoodFactsService = OpenFoodFactsService();
+
+  bool _buscandoProduto = false;
+  String? _imagemUrlExterna;
+  String? _fonteProdutoUrl;
+  String? _mensagemBusca;
 
   late Future<List<Categoria>> _categoriasFuture;
 
   String? _idCategoriaSelecionada;
   bool _salvando = false;
   bool _exigeValidade = false;
-  DateTime? _dataValidade;
+DateTime? _dataValidade;
 
-  @override
-  void initState() {
-    super.initState();
+@override
+void initState() {
+super.initState();
 
-    final produto = widget.produto;
+final produto = widget.produto;
 
-    if (produto != null) {
-      _nomeController.text = produto.nome;
-      _codigoBarrasController.text = produto.codigoBarras ?? '';
+if (produto == null) {
+_codigoBarrasController.text =
+widget.codigoInicial?.trim() ?? '';
+} else {
+_nomeController.text = produto.nome;
+_codigoBarrasController.text = produto.codigoBarras ?? '';
 
-      _precoVendaController.text = produto.precoVenda == null
-          ? ''
-          : produto.precoVenda!
-          .toStringAsFixed(2)
-          .replaceAll('.', ',');
+_precoVendaController.text = produto.precoVenda == null
+? ''
+: produto.precoVenda!
+.toStringAsFixed(2)
+.replaceAll('.', ',');
 
-      _quantidadeInicialController.text =
-          produto.quantidadeAtual.toString();
+_quantidadeInicialController.text =
+produto.quantidadeAtual.toString();
 
-      _estoqueMinimoController.text =
-          produto.estoqueMinimo.toString();
+_estoqueMinimoController.text =
+produto.estoqueMinimo.toString();
 
-      _idCategoriaSelecionada = produto.idCategoria;
-      _exigeValidade = produto.exigeValidade;
-      _dataValidade = produto.dataValidade;
+_idCategoriaSelecionada = produto.idCategoria;
+_exigeValidade = produto.exigeValidade;
+_dataValidade = produto.dataValidade;
+}
+
+final idUsuario = FirebaseAuth.instance.currentUser?.uid;
+
+_categoriasFuture = idUsuario == null
+    ? Future.value(<Categoria>[])
+    : _categoriaViewModel.listarPorUsuario(idUsuario);
+
+if (produto == null &&
+    _codigoBarrasController.text.trim().isNotEmpty) {
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    if (mounted) {
+      _buscarProdutoExterno();
+    }
+  });
+}
+}
+  Future<void> _buscarProdutoExterno() async {
+    if (_buscandoProduto || _salvando || widget.produto != null) {
+      return;
     }
 
-    final idUsuario = FirebaseAuth.instance.currentUser?.uid;
+    final codigo = _codigoBarrasController.text.trim();
+    final nomeAntesDaBusca = _nomeController.text;
 
-    _categoriasFuture = idUsuario == null
-        ? Future.value(<Categoria>[])
-        : _categoriaViewModel.listarPorUsuario(idUsuario);
+    if (codigo.isEmpty) {
+      setState(() {
+        _mensagemBusca = 'Informe ou escaneie o código de barras.';
+      });
+      return;
+    }
+
+    setState(() {
+      _buscandoProduto = true;
+      _mensagemBusca = null;
+    });
+
+    try {
+      final resultado =
+      await _openFoodFactsService.buscarPorCodigo(codigo);
+
+      if (!mounted) {
+        return;
+      }
+
+      // Ignora a resposta se o código foi alterado durante a busca.
+      if (_codigoBarrasController.text.trim() != codigo) {
+        setState(() {
+          _mensagemBusca =
+          'O código mudou. Faça uma nova busca.';
+        });
+        return;
+      }
+
+      setState(() {
+        if (resultado == null) {
+          _mensagemBusca =
+          'Produto não encontrado. Preencha os dados manualmente.';
+          return;
+        }
+
+        // Preserva um nome que você já tenha preenchido.
+        if (nomeAntesDaBusca.trim().isEmpty &&
+            _nomeController.text.trim().isEmpty) {
+          _nomeController.text = resultado.nome;
+        }
+
+        _imagemUrlExterna = resultado.imagemUrl;
+        _fonteProdutoUrl = resultado.fonteUrl;
+
+        _mensagemBusca = resultado.imagemUrl == null
+            ? 'Dados encontrados, sem foto. Confira antes de salvar.'
+            : 'Dados encontrados. Confira antes de salvar.';
+      });
+    } catch (_) {
+      if (!mounted) {
+        return;
+      }
+
+      setState(() {
+        _mensagemBusca =
+        'Não foi possível buscar os dados. '
+            'Tente novamente ou preencha manualmente.';
+      });
+    } finally {
+      if (mounted) {
+        setState(() {
+          _buscandoProduto = false;
+        });
+      }
+    }
   }
 
   Future<void> _selecionarDataValidade() async {
@@ -111,6 +208,10 @@ class _CadastroProdutoPageState extends State<CadastroProdutoPage> {
   }
 
   Future<void> _salvarProduto() async {
+    if (_buscandoProduto || _salvando) {
+      return;
+    }
+
     final idUsuario = FirebaseAuth.instance.currentUser?.uid;
 
     if (idUsuario == null) {
@@ -126,7 +227,8 @@ class _CadastroProdutoPageState extends State<CadastroProdutoPage> {
       _salvando = true;
     });
 
-    String? imagemUrl = widget.produto?.imagemUrl;
+    String? imagemUrl =
+        _imagemUrlExterna ?? widget.produto?.imagemUrl;
 
     try {
       if (_imagemSelecionada != null) {
@@ -283,6 +385,8 @@ class _CadastroProdutoPageState extends State<CadastroProdutoPage> {
   @override
   Widget build(BuildContext context) {
     final editando = widget.produto != null;
+    final imagemUrl =
+        _imagemUrlExterna ?? widget.produto?.imagemUrl;
 
     return Scaffold(
       appBar: AppBar(
@@ -311,10 +415,18 @@ class _CadastroProdutoPageState extends State<CadastroProdutoPage> {
                           File(_imagemSelecionada!.path),
                           fit: BoxFit.cover,
                         )
-                            : widget.produto?.imagemUrl != null
+                            : imagemUrl != null && imagemUrl.trim().isNotEmpty
                             ? Image.network(
-                          widget.produto!.imagemUrl!,
-                          fit: BoxFit.cover,
+                          imagemUrl,
+                          fit: BoxFit.contain,
+                          errorBuilder: (context, erro, pilha) {
+                            return const Center(
+                              child: Icon(
+                                Icons.broken_image_outlined,
+                                size: 48,
+                              ),
+                            );
+                          },
                         )
                             : Container(
                           color: Colors.grey.shade200,
@@ -348,6 +460,14 @@ class _CadastroProdutoPageState extends State<CadastroProdutoPage> {
               const SizedBox(height: 16),
               TextFormField(
                 controller: _codigoBarrasController,
+                enabled: !_salvando && !_buscandoProduto,
+                onChanged: (_) {
+                  setState(() {
+                    _imagemUrlExterna = null;
+                    _fonteProdutoUrl = null;
+                    _mensagemBusca = null;
+                  });
+                },
                 decoration: const InputDecoration(
                   labelText: 'Código de barras ou QR Code',
                   helperText:
@@ -355,6 +475,48 @@ class _CadastroProdutoPageState extends State<CadastroProdutoPage> {
                   border: OutlineInputBorder(),
                 ),
               ),
+              if (!editando) ...[
+                const SizedBox(height: 12),
+                OutlinedButton.icon(
+                  onPressed: _buscandoProduto || _salvando
+                      ? null
+                      : _buscarProdutoExterno,
+                  icon: _buscandoProduto
+                      ? const SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                    ),
+                  )
+                      : const Icon(Icons.search),
+                  label: Text(
+                    _buscandoProduto
+                        ? 'Buscando produto...'
+                        : 'Buscar dados pelo código',
+                  ),
+                ),
+                if (_mensagemBusca != null) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    _mensagemBusca!,
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+                if (_fonteProdutoUrl != null) ...[
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Fonte: Open Food Facts • Dados: ODbL',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 12),
+                  ),
+                  SelectableText(
+                    _fonteProdutoUrl!,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(fontSize: 12),
+                  ),
+                ],
+              ],
               const SizedBox(height: 16),
               TextFormField(
                 controller: _precoVendaController,
@@ -470,7 +632,9 @@ class _CadastroProdutoPageState extends State<CadastroProdutoPage> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: _salvando ? null : _salvarProduto,
+                  onPressed: _salvando || _buscandoProduto
+                      ? null
+                      : _salvarProduto,
                   child: Text(
                     _salvando
                         ? 'Salvando...'
