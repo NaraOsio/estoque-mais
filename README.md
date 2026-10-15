@@ -36,7 +36,7 @@ Permitir que o comerciante cadastre produtos, acompanhe a quantidade disponível
 - A movimentação e a atualização da quantidade ocorrem juntas no Cloud Firestore.
 - Produtos podem possuir validade opcional.
 
-## Estrutura do projeto
+## Estrutura do projeto 
 
 ```text
 lib/
@@ -45,3 +45,12 @@ lib/
     categorias/
     produtos/
     movimentacoes/
+
+
+## Baixar o aplicativo
+
+[📱 Baixar Estoque+ para Android](https://github.com/NaraOsio/estoque-mais/releases/download/v1.0.0/app-release.2.apk)
+
+Baixe o APK pelo celular Android e abra o arquivo para instalar.
+Se solicitado, permita a instalação pelo navegador utilizado.
+
