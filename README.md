@@ -46,17 +46,9 @@ lib/
     produtos/
     movimentacoes/
 
-
-## Baixar o aplicativo
-
 ## Baixar o aplicativo
 
 [📱 Baixar Estoque+ para Android](https://github.com/NaraOsio/estoque-mais/releases/download/v1.0.0/app-release.apk)
-
-Baixe o APK pelo celular Android e abra o arquivo para instalar.
-Se solicitado, permita a instalação pelo navegador utilizado.
-
-[📱 Baixar Estoque+ para Android](https://github.com/NaraOsio/estoque-mais/releases/download/v1.0.0/app-release.2.apk)
 
 Baixe o APK pelo celular Android e abra o arquivo para instalar.
 Se solicitado, permita a instalação pelo navegador utilizado.
