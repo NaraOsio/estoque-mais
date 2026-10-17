@@ -21,7 +21,7 @@ class ProdutoRepository {
     final produtoRef =
     _firestore.collection('produtos').doc(produto.id);
 
-    lote.set(produtoRef, {
+    final dadosProduto = <String, dynamic>{
       'id': produto.id,
       'idUsuario': produto.idUsuario,
       'idCategoria': produto.idCategoria,
@@ -37,8 +37,18 @@ class ProdutoRepository {
       'exigeValidade': produto.exigeValidade,
       'ativo': produto.ativo,
       'criadoEm': Timestamp.fromDate(produto.criadoEm),
-    });
+    };
 
+    if (registrarEntradaInicial) {
+      lote.set(produtoRef, dadosProduto);
+    } else {
+      dadosProduto.remove('quantidadeAtual');
+      dadosProduto.remove('criadoEm');
+      dadosProduto.remove('id');
+      dadosProduto.remove('idUsuario');
+
+      lote.update(produtoRef, dadosProduto);
+    }
     if (registrarEntradaInicial && produto.quantidadeAtual > 0) {
       final movimentacaoRef =
       _firestore.collection('movimentacoes').doc();
