@@ -213,6 +213,17 @@ class _DashboardPageState extends State<DashboardPage> {
                     ),
                   ],
                 ),
+                if (produtosComAlerta.isEmpty) ...[
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Não há produtos com estoque baixo ou em falta.',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF1565C0),
+                    ),
+                  ),
+                ],
                 const SizedBox(height: 24),
                 FilledButton.icon(
                   onPressed: _abrirProdutos,
