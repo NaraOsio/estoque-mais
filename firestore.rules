@@ -1,0 +1,65 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /usuarios/{idUsuario} {
+      allow create: if request.auth != null
+          && request.auth.uid == idUsuario
+          && request.resource.data.id == request.auth.uid;
+
+      allow read: if request.auth != null
+          && request.auth.uid == idUsuario
+          && resource.data.id == request.auth.uid;
+
+      allow update: if request.auth != null
+          && request.auth.uid == idUsuario
+          && resource.data.id == request.auth.uid
+          && request.resource.data.id == request.auth.uid;
+    }
+
+    match /categorias/{idCategoria} {
+      allow create: if request.auth != null
+          && request.resource.data.idUsuario == request.auth.uid
+          && request.resource.data.id == idCategoria;
+
+      allow read: if request.auth != null
+          && resource.data.idUsuario == request.auth.uid;
+
+      allow update: if request.auth != null
+          && resource.data.idUsuario == request.auth.uid
+          && request.resource.data.idUsuario == request.auth.uid;
+    }
+
+        match /produtos/{idProduto} {
+      function dadosValidos() {
+        return request.resource.data.id == idProduto
+            && request.resource.data.idUsuario == request.auth.uid
+            && request.resource.data.quantidadeAtual is int
+            && request.resource.data.quantidadeAtual >= 0
+            && request.resource.data.estoqueMinimo is int
+            && request.resource.data.estoqueMinimo >= 0;
+      }
+
+      allow create: if request.auth != null
+          && dadosValidos();
+
+      allow read: if request.auth != null
+          && resource.data.idUsuario == request.auth.uid;
+
+      allow update: if request.auth != null
+          && resource.data.idUsuario == request.auth.uid
+          && dadosValidos()
+          && request.resource.data.id == resource.data.id
+          && request.resource.data.criadoEm == resource.data.criadoEm;
+    }
+        match /movimentacoes/{idMovimentacao} {
+      allow create: if request.auth != null
+          && request.resource.data.idUsuario == request.auth.uid
+          && request.resource.data.id == idMovimentacao;
+
+      allow read: if request.auth != null
+          && resource.data.idUsuario == request.auth.uid;
+    }
+  }
+}

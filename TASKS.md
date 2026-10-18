@@ -44,8 +44,8 @@
 - [x] Conferir permissões de leitura de uma categoria no simulador do Firestore.
 - [x] Corrigir e testar preservação do saldo em edição desatualizada.
 - [x] Executar flutter analyze sem problemas e atualizar README localmente.
-- [ ] Validar leitura de código pela câmera real.
-- [ ] Reforçar e testar validações de gravação no Firestore.
+- [x] Validar leitura de código pela câmera real.
+- [x] Bloquear estoque e estoque mínimo negativos nas regras do Firestore; testar no simulador e conferir edição, entrada, saída e histórico no aplicativo.
 
 
 ## Funcionalidades adicionais implementadas
