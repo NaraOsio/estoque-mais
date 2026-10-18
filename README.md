@@ -111,8 +111,8 @@ https://github.com/NaraOsio/estoque-mais
 
 ## Baixar o aplicativo
 
-[Baixar Estoque+ para Android](https://github.com/NaraOsio/estoque-mais/releases/download/v1.0.0/app-release.apk)
+[Baixar Estoque+ para Android](https://github.com/NaraOsio/estoque-mais/releases/download/v1.0.1/app-release.apk)
 
-O APK da versão v1.0.0 precisa ser atualizado para incluir a correção mais recente de preservação do saldo.
+O APK publicado na versão v1.0.1 inclui a correção de preservação do saldo e foi testado no emulador e em celular Android.
 
 Baixe o APK no dispositivo Android e abra o arquivo para instalar. Se solicitado, autorize a instalação pelo navegador utilizado.
