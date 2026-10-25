@@ -15,7 +15,7 @@
 - [x] Editar nome, categoria e estoque mínimo do produto.
 - [x] Impedir alteração direta da quantidade na tela de edição.
 - [x] Desativar produto sem apagar o documento.
-- [x] Ocultar produtos desativados da lista principal.
+- [x] Ocultar produtos desativados da lis[README.md](README.md)ta principal.
 - [x] Adicionar validade opcional ao produto.
 
 ## Sprint 3 — Movimentações e alertas
@@ -58,8 +58,8 @@
 - [x] Exibir painel com produtos ativos, alertas de estoque e movimentações recentes.
 - [x] Registrar entrada inicial no histórico ao cadastrar produto com quantidade positiva.
 
-## Histórias do planejamento original ainda não concluídas
+## Histórias do planejamento original — acompanhamento
 
-- [ ] US05 — Completar o painel com produtos separados por situação e validade.
+- [x] US05 — Completar o painel com produtos separados por situação e validade.
 - [ ] US06 — Implementar lista de reposição.
 - [ ] US07 — Implementar pesquisa por nome ou categoria.

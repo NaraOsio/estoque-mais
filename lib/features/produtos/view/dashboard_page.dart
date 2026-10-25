@@ -34,31 +34,24 @@ class _DashboardPageState extends State<DashboardPage> {
     final idUsuario = FirebaseAuth.instance.currentUser?.uid;
 
     if (idUsuario == null) {
-      return const _DadosDashboard(
-        produtos: [],
-        movimentacoes: [],
-      );
+      return const _DadosDashboard(produtos: [], movimentacoes: []);
     }
 
     final produtosFuture = _produtoViewModel.listarPorUsuario(idUsuario);
-    final movimentacoesFuture =
-    _movimentacaoViewModel.listarPorUsuario(idUsuario);
+    final movimentacoesFuture = _movimentacaoViewModel.listarPorUsuario(
+      idUsuario,
+    );
 
     final produtos = await produtosFuture;
     final movimentacoes = await movimentacoesFuture;
 
-    return _DadosDashboard(
-      produtos: produtos,
-      movimentacoes: movimentacoes,
-    );
+    return _DadosDashboard(produtos: produtos, movimentacoes: movimentacoes);
   }
 
   Future<void> _abrirProdutos() async {
-    await Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => const ListaProdutosPage(),
-      ),
-    );
+    await Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (context) => const ListaProdutosPage()));
 
     if (!mounted) {
       return;
@@ -66,6 +59,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
     setState(_carregarDados);
   }
+
   Future<void> _sairDaConta() async {
     try {
       await FirebaseAuth.instance.signOut();
@@ -75,10 +69,8 @@ class _DashboardPageState extends State<DashboardPage> {
       }
 
       Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(
-          builder: (context) => const LoginPage(),
-        ),
-            (rota) => false,
+        MaterialPageRoute(builder: (context) => const LoginPage()),
+        (rota) => false,
       );
     } catch (_) {
       if (!mounted) {
@@ -106,10 +98,7 @@ class _DashboardPageState extends State<DashboardPage> {
       appBar: AppBar(
         title: const Text(
           'Visão geral',
-          style: TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
         ),
         actions: [
           TextButton.icon(
@@ -119,10 +108,7 @@ class _DashboardPageState extends State<DashboardPage> {
               color: Colors.white,
               size: 20,
             ),
-            label: const Text(
-              'Sair',
-              style: TextStyle(color: Colors.white),
-            ),
+            label: const Text('Sair', style: TextStyle(color: Colors.white)),
           ),
           IconButton(
             onPressed: () {
@@ -137,9 +123,7 @@ class _DashboardPageState extends State<DashboardPage> {
         future: _dadosFuture,
         builder: (context, resultado) {
           if (resultado.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+            return const Center(child: CircularProgressIndicator());
           }
 
           if (resultado.hasError) {
@@ -148,26 +132,43 @@ class _DashboardPageState extends State<DashboardPage> {
             );
           }
 
-          final dados = resultado.data ??
-              const _DadosDashboard(
-                produtos: [],
-                movimentacoes: [],
-              );
+          final dados =
+              resultado.data ??
+              const _DadosDashboard(produtos: [], movimentacoes: []);
 
           final produtosAtivos = dados.produtos
               .where((produto) => produto.ativo)
               .toList();
 
+          final produtosEmFalta = produtosAtivos
+              .where((produto) => produto.quantidadeAtual == 0)
+              .toList();
+
+          final produtosEstoqueBaixo = produtosAtivos
+              .where(
+                (produto) =>
+                    produto.quantidadeAtual > 0 &&
+                    produto.quantidadeAtual <= produto.estoqueMinimo,
+              )
+              .toList();
+
+          final produtosProximosVencimento = produtosAtivos
+              .where(
+                (produto) =>
+                    _produtoViewModel.obterAlertaValidade(produto) != null,
+              )
+              .toList();
+
           final produtosComAlerta = produtosAtivos.where((produto) {
-            return produto.quantidadeAtual <= produto.estoqueMinimo;
+            return _produtoViewModel.obterAlertaEstoque(produto) != null ||
+                _produtoViewModel.obterAlertaValidade(produto) != null;
           }).toList();
 
           final nomesProdutos = <String, String>{
             for (final produto in dados.produtos) produto.id: produto.nome,
           };
 
-          final movimentacoesRecentes =
-          dados.movimentacoes.take(5).toList();
+          final movimentacoesRecentes = dados.movimentacoes.take(5).toList();
 
           return RefreshIndicator(
             onRefresh: () async {
@@ -204,9 +205,10 @@ class _DashboardPageState extends State<DashboardPage> {
                         titulo: 'Com alerta',
                         valor: produtosComAlerta.length.toString(),
                         icone: Icons.warning_amber_rounded,
-                        cor: produtosComAlerta.any(
+                        cor:
+                            produtosComAlerta.any(
                               (produto) => produto.quantidadeAtual == 0,
-                        )
+                            )
                             ? Colors.red
                             : Colors.orange,
                       ),
@@ -216,7 +218,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 if (produtosComAlerta.isEmpty) ...[
                   const SizedBox(height: 16),
                   const Text(
-                    'Não há produtos com estoque baixo ou em falta.',
+                    'Não há itens que exigem atenção.',
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
@@ -237,18 +239,74 @@ class _DashboardPageState extends State<DashboardPage> {
                       borderRadius: BorderRadius.circular(16),
                     ),
                   ),
-                  icon: const Icon(
-                    Icons.inventory_2_rounded,
-                    size: 24,
-                  ),
+                  icon: const Icon(Icons.inventory_2_rounded, size: 24),
                   label: const Text(
                     'Abrir produtos',
-                    style: TextStyle(
-                      fontSize: 17,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
                   ),
                 ),
+                if (produtosEmFalta.isNotEmpty) ...[
+                  const SizedBox(height: 16),
+                  Card(
+                    child: ExpansionTile(
+                      title: Text('Em falta (${produtosEmFalta.length})'),
+                      initiallyExpanded: true,
+                      children: [
+                        for (final produto in produtosEmFalta)
+                          ListTile(
+                            title: Text(produto.nome),
+                            subtitle: Text(
+                              'Quantidade: ${produto.quantidadeAtual} • '
+                              'Mínimo: ${produto.estoqueMinimo}',
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                ],
+                if (produtosEstoqueBaixo.isNotEmpty) ...[
+                  const SizedBox(height: 16),
+                  Card(
+                    child: ExpansionTile(
+                      title: Text(
+                        'Estoque baixo (${produtosEstoqueBaixo.length})',
+                      ),
+                      initiallyExpanded: true,
+                      children: [
+                        for (final produto in produtosEstoqueBaixo)
+                          ListTile(
+                            title: Text(produto.nome),
+                            subtitle: Text(
+                              'Quantidade: ${produto.quantidadeAtual} • '
+                              'Mínimo: ${produto.estoqueMinimo}',
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                ],
+                if (produtosProximosVencimento.isNotEmpty) ...[
+                  const SizedBox(height: 16),
+                  Card(
+                    child: ExpansionTile(
+                      title: Text(
+                        'Próximos do vencimento '
+                        '(${produtosProximosVencimento.length})',
+                      ),
+                      initiallyExpanded: true,
+                      children: [
+                        for (final produto in produtosProximosVencimento)
+                          ListTile(
+                            title: Text(produto.nome),
+                            subtitle: Text(
+                              'Validade: ${_formatarData(produto.dataValidade!)}'
+                              ' • ${_produtoViewModel.obterAlertaValidade(produto) ?? ''}',
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                ],
                 const SizedBox(height: 28),
                 Text(
                   'Movimentações recentes',
@@ -259,22 +317,23 @@ class _DashboardPageState extends State<DashboardPage> {
                   const Card(
                     child: Padding(
                       padding: EdgeInsets.all(20),
-                      child: Text(
-                        'Nenhuma movimentação registrada ainda.',
-                      ),
+                      child: Text('Nenhuma movimentação registrada ainda.'),
                     ),
                   )
                 else
                   Card(
                     child: Column(
                       children: [
-                        for (var indice = 0;
-                        indice < movimentacoesRecentes.length;
-                        indice++) ...[
+                        for (
+                          var indice = 0;
+                          indice < movimentacoesRecentes.length;
+                          indice++
+                        ) ...[
                           _MovimentacaoRecenteItem(
                             movimentacao: movimentacoesRecentes[indice],
-                            nomeProduto: nomesProdutos[
-                            movimentacoesRecentes[indice].idProduto] ??
+                            nomeProduto:
+                                nomesProdutos[movimentacoesRecentes[indice]
+                                    .idProduto] ??
                                 'Produto não encontrado',
                             dataFormatada: _formatarData(
                               movimentacoesRecentes[indice].dataMovimentacao,
@@ -338,11 +397,7 @@ class _ResumoCard extends StatelessWidget {
               color: Colors.white.withValues(alpha: 0.18),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(
-              icone,
-              color: Colors.white,
-              size: 25,
-            ),
+            child: Icon(icone, color: Colors.white, size: 25),
           ),
           const SizedBox(height: 18),
           Text(
@@ -382,9 +437,7 @@ class _MovimentacaoRecenteItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final entrada = movimentacao.tipo == 'entrada';
-    final cor = entrada
-        ? const Color(0xFF187544)
-        : const Color(0xFFB3261E);
+    final cor = entrada ? const Color(0xFF187544) : const Color(0xFFB3261E);
 
     return Padding(
       padding: const EdgeInsets.all(16),
@@ -452,7 +505,7 @@ class _MovimentacaoRecenteItem extends StatelessWidget {
                     ),
                     Text(
                       '${entrada ? '+' : '-'}'
-                          '${movimentacao.quantidade} unidade(s)',
+                      '${movimentacao.quantidade} unidade(s)',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -474,8 +527,5 @@ class _DadosDashboard {
   final List<Produto> produtos;
   final List<Movimentacao> movimentacoes;
 
-  const _DadosDashboard({
-    required this.produtos,
-    required this.movimentacoes,
-  });
+  const _DadosDashboard({required this.produtos, required this.movimentacoes});
 }
