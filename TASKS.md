@@ -62,4 +62,4 @@
 
 - [x] US05 — Completar o painel com produtos separados por situação e validade.
 - [x] US06 — Implementar lista de reposição.
-- [ ] US07 — Implementar pesquisa por nome ou categoria.
+- [x] US07 — Implementar pesquisa por nome ou categoria.

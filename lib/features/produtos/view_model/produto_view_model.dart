@@ -250,6 +250,30 @@ class ProdutoViewModel {
 
     return null;
   }
+  List<Produto> pesquisarProdutos({
+    required List<Produto> produtos,
+    required String pesquisa,
+    required Map<String, String> nomesCategorias,
+  }) {
+    final termo = pesquisa.trim().toLowerCase();
+
+    return produtos.where((produto) {
+      if (!produto.ativo) {
+        return false;
+      }
+
+      if (termo.isEmpty) {
+        return true;
+      }
+
+      final nomeProduto = produto.nome.toLowerCase();
+      final nomeCategoria =
+      (nomesCategorias[produto.idCategoria] ?? '').toLowerCase();
+
+      return nomeProduto.contains(termo) ||
+          nomeCategoria.contains(termo);
+    }).toList();
+  }
   List<Produto> obterProdutosParaReposicao(List<Produto> produtos) {
     return produtos
         .where(
@@ -263,4 +287,5 @@ class ProdutoViewModel {
   Future<List<Produto>> listarPorUsuario(String idUsuario) {
     return _repository.listarPorUsuario(idUsuario);
   }
+
 }

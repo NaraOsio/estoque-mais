@@ -11,6 +11,7 @@ import '../view_model/produto_view_model.dart';
 import 'cadastro_produto_page.dart';
 import 'leitor_codigo_page.dart';
 import 'lista_reposicao_page.dart';
+import '../../categorias/view_model/categoria_view_model.dart';
 
 enum _AcaoMenu {
   historico,
@@ -29,6 +30,9 @@ class ListaProdutosPage extends StatefulWidget {
 class _ListaProdutosPageState extends State<ListaProdutosPage> {
   final _autenticacaoRepository = AutenticacaoRepository();
   final _produtoViewModel = ProdutoViewModel();
+  final _categoriaViewModel = CategoriaViewModel();
+  final Map<String, String> _nomesCategorias = {};
+  String _pesquisa = '';
 
   late Future<List<Produto>> _produtosFuture;
 
@@ -41,9 +45,25 @@ class _ListaProdutosPageState extends State<ListaProdutosPage> {
   void _carregarProdutos() {
     final idUsuario = FirebaseAuth.instance.currentUser?.uid;
 
+    _nomesCategorias.clear();
+
     _produtosFuture = idUsuario == null
         ? Future.value(<Produto>[])
-        : _produtoViewModel.listarPorUsuario(idUsuario);
+        : _carregarProdutosECategorias(idUsuario);
+  }
+
+  Future<List<Produto>> _carregarProdutosECategorias(
+      String idUsuario,
+      ) async {
+    final categorias =
+    await _categoriaViewModel.listarPorUsuario(idUsuario);
+
+    _nomesCategorias.addAll({
+      for (final categoria in categorias)
+        categoria.id: categoria.nome,
+    });
+
+    return _produtoViewModel.listarPorUsuario(idUsuario);
   }
 
   Future<void> _abrirCadastroProduto() async {
@@ -149,6 +169,29 @@ class _ListaProdutosPageState extends State<ListaProdutosPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Produtos'),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(72),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+            child: TextField(
+              onChanged: (texto) {
+                setState(() {
+                  _pesquisa = texto;
+                });
+              },
+              decoration: InputDecoration(
+                hintText: 'Pesquisar por nome ou categoria',
+                prefixIcon: const Icon(Icons.search_rounded),
+                filled: true,
+                fillColor: Theme.of(context).colorScheme.surface,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+            ),
+          ),
+        ),
         actions: [
           IconButton(
             onPressed: () {
@@ -227,13 +270,23 @@ class _ListaProdutosPageState extends State<ListaProdutosPage> {
             );
           }
 
-          final produtos = (resultado.data ?? [])
+          final produtosAtivos = (resultado.data ?? <Produto>[])
               .where((produto) => produto.ativo)
               .toList();
 
+          final produtos = _produtoViewModel.pesquisarProdutos(
+            produtos: produtosAtivos,
+            pesquisa: _pesquisa,
+            nomesCategorias: _nomesCategorias,
+          );
+
           if (produtos.isEmpty) {
-            return const Center(
-              child: Text('Nenhum produto cadastrado'),
+            return Center(
+              child: Text(
+                produtosAtivos.isEmpty
+                    ? 'Nenhum produto cadastrado'
+                    : 'Nenhum produto encontrado para a pesquisa.',
+              ),
             );
           }
 
