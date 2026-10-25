@@ -12,7 +12,10 @@ Nome técnico do projeto: estoque_mais
 - Arquitetura MVVM
 - Firebase Authentication
 - Cloud Firestore
-- Firebase Storage
+
+- Cloudinary para envio e armazenamento de fotos dos produtos
+- Open Food Facts para consulta de nome e imagem por código de barras
+- Mobile Scanner para leitura de códigos pela câmera
 - Git e GitHub
 
 ## Convenções de código
@@ -56,6 +59,7 @@ git status
     - fix: para correção.
     - docs: para documentação.
     - refactor: para melhoria interna do código.
+    - test: para criação ou alteração de testes automatizados.
 
 ## Regras e restrições do projeto
 
@@ -64,7 +68,7 @@ git status
 - Produto não deve ser apagado. Usar o campo ativo.
 - Não permitir saída maior que a quantidade disponível.
 - Alertar estoque baixo, zerado e produtos com validade em até 30 dias.
-- Imagens de produtos serão armazenadas futuramente no Firebase Storage.
+- As fotos enviadas pelo aplicativo são armazenadas no Cloudinary, e a URL da imagem é registrada no produto no Cloud Firestore.
 - Movimentação e atualização da quantidade devem ocorrer juntas em uma transação do Cloud Firestore.
 - Não apagar, mover ou sobrescrever arquivos sem autorização.
 - Não inventar funcionalidades, arquivos, dados ou decisões fora do projeto.
