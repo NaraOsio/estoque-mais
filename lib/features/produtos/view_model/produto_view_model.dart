@@ -250,6 +250,15 @@ class ProdutoViewModel {
 
     return null;
   }
+  List<Produto> obterProdutosParaReposicao(List<Produto> produtos) {
+    return produtos
+        .where(
+          (produto) =>
+      produto.ativo &&
+          produto.quantidadeAtual <= produto.estoqueMinimo,
+    )
+        .toList();
+  }
 
   Future<List<Produto>> listarPorUsuario(String idUsuario) {
     return _repository.listarPorUsuario(idUsuario);

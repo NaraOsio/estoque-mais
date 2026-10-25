@@ -10,10 +10,12 @@ import '../model/produto.dart';
 import '../view_model/produto_view_model.dart';
 import 'cadastro_produto_page.dart';
 import 'leitor_codigo_page.dart';
+import 'lista_reposicao_page.dart';
 
 enum _AcaoMenu {
   historico,
   categorias,
+  reposicao,
   sair,
 }
 
@@ -125,13 +127,18 @@ class _ListaProdutosPageState extends State<ListaProdutosPage> {
           (route) => false,
     );
   }
-
   void _executarAcaoMenu(_AcaoMenu acao) {
     switch (acao) {
       case _AcaoMenu.historico:
         _abrirHistorico();
       case _AcaoMenu.categorias:
         _abrirCategorias();
+      case _AcaoMenu.reposicao:
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => const ListaReposicaoPage(),
+          ),
+        );
       case _AcaoMenu.sair:
         _sair();
     }
@@ -182,6 +189,13 @@ class _ListaProdutosPageState extends State<ListaProdutosPage> {
                   child: _ItemMenu(
                     icone: Icons.category_rounded,
                     texto: 'Categorias',
+                  ),
+                ),
+                PopupMenuItem(
+                  value: _AcaoMenu.reposicao,
+                  child: _ItemMenu(
+                    icone: Icons.shopping_cart_outlined,
+                    texto: 'Lista de reposição',
                   ),
                 ),
                 PopupMenuItem(
