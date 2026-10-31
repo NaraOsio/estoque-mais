@@ -50,7 +50,6 @@ void main() {
           ativo: false,
         ),
       ];
-
       // 2. Executar a regra de reposição.
       final resultado = viewModel.obterProdutosParaReposicao(produtos);
 
@@ -61,4 +60,46 @@ void main() {
       );
     },
   );
+  test('TC04 - Recusa nome formado apenas por espaços', () {
+    final viewModel = ProdutoViewModel(
+      repository: RepositorioSemBanco(),
+    );
+
+    final resultado = viewModel.validarCadastro(
+      nome: '   ',
+      quantidadeInicialTexto: '0',
+      estoqueMinimoTexto: '5',
+      precoVendaTexto: '2,99',
+    );
+
+    expect(resultado, 'Informe o nome do produto.');
+  });
+  test('TC05 - Alerta estoque igual ao mínimo', () {
+    final viewModel = ProdutoViewModel(
+      repository: RepositorioSemBanco(),
+    );
+
+    final produto = criarProdutoParaTeste(
+      id: 'estoque-no-minimo',
+      quantidade: 5,
+    );
+
+    final resultado = viewModel.obterAlertaEstoque(produto);
+
+    expect(resultado, 'Estoque baixo');
+  });
+  test('TC06 - Alerta produto sem estoque', () {
+    final viewModel = ProdutoViewModel(
+      repository: RepositorioSemBanco(),
+    );
+
+    final produto = criarProdutoParaTeste(
+      id: 'sem-estoque',
+      quantidade: 0,
+    );
+
+    final resultado = viewModel.obterAlertaEstoque(produto);
+
+    expect(resultado, 'Sem estoque');
+  });
 }

@@ -76,11 +76,19 @@ O status abaixo corresponde à nova rodada de conferência.
 
 ### Controle de execução
 
-| ID | Tipo | Responsável | Status |
-|---|---|---|---|
-| TC01 | Unitário | Nara | Passou |
-| TC02 | Integração de interface no Android | Nara | Passou |
-| TC03 | Aceitação manual | Nara | Passou |
+| ID | Tipo | Descrição | Critério de aceite | Responsável | Status |
+|---|---|---|---|---|---|
+| TC01 | Unitário | Lista de reposição | Incluir somente ativos com saldo até o mínimo | Nara | Passou |
+| TC02 | Interface Android — adicional | Login vazio | Exibir erro e permanecer no login | Nara | Passou |
+| TC03 | Aceitação | Saída acima do saldo | Bloquear sem alterar saldo ou histórico | Nara | Passou |
+| TC04 | Unitário | Nome vazio | Retornar “Informe o nome do produto.” | Nara | Passou |
+| TC05 | Unitário | Saldo igual ao mínimo | Retornar “Estoque baixo” | Nara | Não iniciado |
+| TC06 | Unitário | Saldo zerado | Retornar “Sem estoque” | Nara | Não iniciado |
+| TC07 | Unitário | Pesquisa pelo nome | “REFRI” retorna somente “Refrigerante” | Nara | Não iniciado |
+| TC08 | Integração | Consultar produtos | Retornar somente os dois produtos do usuário | Nara | Não iniciado |
+| TC09 | Integração | Entrada de 3 unidades | Saldo passa de 5 para 8 e entrada é registrada | Nara | Não iniciado |
+| TC10 | Integração | Saída sem saldo | Retornar erro, manter saldo e não gravar movimentação | Nara | Não iniciado |
+| TC11 | Aceitação | Cadastrar produto | Produto aparece na lista com os dados informados | Nara | Não iniciado |
 
 ### TC01 — Regra da lista de reposição
 
@@ -189,3 +197,238 @@ O saldo permaneceu em 5 e não apareceu uma nova saída
 desse produto no histórico consultado.
 
 **Status:** Passou.
+
+### TC04 — Recusar nome de produto vazio
+
+- **Tipo:** Unitário.
+- **Tarefa relacionada:** Sprint 4 — Validar bloqueios de cadastro.
+- **Responsável:** Nara.
+
+**Descrição:**
+Verificar se a validação recusa um nome formado apenas por espaços.
+
+**Contexto (Dado):**
+Nome igual a três espaços, quantidade inicial "0",
+estoque mínimo "5" e preço de venda "2,99".
+
+**Ação (Quando):**
+Executar validarCadastro do ProdutoViewModel com esses valores.
+
+**Resultado esperado e critério de aprovação (Então):**
+Retornar a mensagem “Informe o nome do produto.”.
+
+**Resultado obtido:**
+A validação retornou “Informe o nome do produto.”
+para o nome formado apenas por espaços.
+O arquivo de testes terminou com:
++2: All tests passed!
+
+**Status:** Passou.
+
+### TC05 — Alertar estoque igual ao mínimo
+
+- **Tipo:** Unitário.
+- **Tarefa relacionada:** Sprint 3 — Alertar estoque baixo.
+- **Responsável:** Nara.
+
+**Descrição:**
+Verificar o alerta quando o saldo é igual ao estoque mínimo.
+
+**Contexto (Dado):**
+Produto ativo com quantidade atual de 5 unidades
+e estoque mínimo de 5 unidades.
+
+**Ação (Quando):**
+Executar obterAlertaEstoque do ProdutoViewModel para esse produto.
+
+**Resultado esperado e critério de aprovação (Então):**
+Retornar a mensagem “Estoque baixo”.
+
+**Resultado obtido:**
+Para o produto com saldo 5 e estoque mínimo 5,
+o método retornou “Estoque baixo”.
+A execução do arquivo terminou com:
++3: All tests passed!
+
+**Status:** Passou.
+
+### TC06 — Alertar produto sem estoque
+
+- **Tipo:** Unitário.
+- **Tarefa relacionada:** Sprint 3 — Alertar produto sem estoque.
+- **Responsável:** Nara.
+
+**Descrição:**
+Verificar o alerta de um produto com saldo zerado.
+
+**Contexto (Dado):**
+Produto ativo com quantidade atual de 0 unidades
+e estoque mínimo de 5 unidades.
+
+**Ação (Quando):**
+Executar obterAlertaEstoque do ProdutoViewModel para esse produto.
+
+**Resultado esperado e critério de aprovação (Então):**
+Retornar a mensagem “Sem estoque”.
+
+**Resultado obtido:** Ainda não executado nesta etapa.
+
+**Status:** Não iniciado.
+
+### TC07 — Pesquisar por parte do nome
+
+- **Tipo:** Unitário.
+- **Tarefa relacionada:** US07 — Implementar pesquisa por nome ou categoria.
+- **Responsável:** Nara.
+
+**Descrição:**
+Verificar a pesquisa por parte do nome sem diferenciar
+maiúsculas e minúsculas.
+
+**Contexto (Dado):**
+Dois produtos ativos: “Refrigerante” e “Arroz”.
+Nenhum nome de categoria contém o termo pesquisado.
+
+**Ação (Quando):**
+Executar pesquisarProdutos do ProdutoViewModel
+com a pesquisa “REFRI” e os nomes das categorias.
+
+**Resultado esperado e critério de aprovação (Então):**
+Retornar somente o produto “Refrigerante”.
+
+**Resultado obtido:** Ainda não executado nesta etapa.
+
+**Status:** Não iniciado.
+
+### TC08 — Consultar produtos do usuário no Firestore
+
+- **Tipo:** Integração.
+- **Tarefa relacionada:** Sprint 2 — Listar produtos do usuário autenticado.
+- **Responsável:** Nara.
+
+**Descrição:**
+Verificar a consulta de produtos do usuário no Firestore.
+
+**Contexto (Dado):**
+Usuário de teste autenticado.
+Existem dois produtos de teste vinculados a esse usuário
+e um produto vinculado a outro usuário.
+
+**Ação (Quando):**
+Executar listarPorUsuario do ProdutoRepository
+com o ID do usuário autenticado.
+
+**Resultado esperado e critério de aprovação (Então):**
+Retornar os dois produtos desse usuário com os dados
+esperados, sem incluir o produto do outro usuário.
+
+**Resultado obtido:**
+Teste executado no Android com Authentication e Firestore
+locais, no projeto demo-estoque-mais.
+
+A consulta retornou os dois produtos do usuário autenticado,
+com os dados esperados, sem incluir o produto do outro usuário.
+
+O terminal apresentou: +1: All tests passed!
+
+**Status:** Passou.
+
+### TC09 — Registrar entrada no Firestore
+
+- **Tipo:** Integração.
+- **Tarefa relacionada:** Sprint 3 — Atualizar saldo e histórico na mesma transação.
+- **Responsável:** Nara.
+
+**Descrição:**
+Verificar se uma entrada atualiza o saldo e grava
+a movimentação no Firestore.
+
+**Contexto (Dado):**
+Usuário de teste autenticado.
+Produto de teste desse usuário com saldo de 5 unidades.
+
+**Ação (Quando):**
+Executar registrar do MovimentacaoRepository
+com uma entrada de 3 unidades.
+Consultar o produto e a movimentação no Firestore.
+
+**Resultado esperado e critério de aprovação (Então):**
+O produto deve apresentar saldo de 8 unidades.
+A movimentação deve registrar entrada de 3 unidades,
+com os IDs corretos do produto e do usuário.
+As duas gravações devem ser concluídas juntas.
+
+**Resultado obtido:** Ainda não executado nesta etapa.
+
+**Status:** Não iniciado.
+
+### TC10 — Bloquear saída sem alterar o Firestore
+
+- **Tipo:** Integração.
+- **Tarefa relacionada:** Sprint 3 — Bloquear saída maior que a quantidade disponível.
+- **Responsável:** Nara.
+
+**Descrição:**
+Verificar se uma saída acima do saldo é recusada
+sem alterar o produto nem gravar uma movimentação.
+
+**Contexto (Dado):**
+Usuário de teste autenticado.
+Produto de teste desse usuário com saldo de 5 unidades.
+ID exclusivo reservado para a tentativa de movimentação,
+sem documento existente no Firestore.
+
+**Ação (Quando):**
+Executar registrar do MovimentacaoRepository
+com uma saída de 6 unidades e o ID reservado.
+Capturar o erro e consultar o produto
+e o documento da movimentação no Firestore.
+
+**Resultado esperado e critério de aprovação (Então):**
+Lançar StateError com a mensagem:
+“Quantidade de saída maior que o estoque disponível.”
+
+O saldo deve permanecer em 5 unidades.
+O documento da movimentação não deve existir.
+
+**Resultado obtido:** Ainda não executado nesta etapa.
+
+**Status:** Não iniciado.
+
+### TC11 — Cadastrar produto e conferir na lista
+
+- **Tipo:** Aceitação manual.
+- **Tarefa relacionada:** Sprint 2 — Criar cadastro de produtos e listar produtos do usuário autenticado.
+- **Responsável:** Nara.
+
+**Descrição:**
+Verificar se o usuário consegue cadastrar um produto
+e encontrá-lo na lista.
+
+**Contexto (Dado):**
+Usuário autenticado e uma categoria cadastrada.
+Não existe produto com o nome “Produto Teste TC11”.
+
+**Ação (Quando):**
+
+1. Abrir a lista de produtos.
+2. Abrir o cadastro de produto.
+3. Informar o nome “Produto Teste TC11”.
+4. Selecionar a categoria cadastrada.
+5. Informar quantidade inicial 5, estoque mínimo 2
+   e preço de venda 2,99.
+6. Manter o controle de validade desativado.
+7. Salvar o produto.
+8. Retornar à lista e localizar o produto.
+9. Abrir seus detalhes e conferir os dados.
+
+**Resultado esperado e critério de aprovação (Então):**
+
+- O cadastro deve ser concluído sem erro.
+- O produto deve aparecer na lista.
+- Os detalhes devem apresentar o nome e a categoria
+  informados, saldo 5, estoque mínimo 2 e preço 2,99.
+
+**Resultado obtido:** Ainda não executado nesta etapa.
+
+**Status:** Não iniciado.
