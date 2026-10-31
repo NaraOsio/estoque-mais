@@ -82,10 +82,10 @@ O status abaixo corresponde à nova rodada de conferência.
 | TC02 | Interface Android — adicional | Login vazio | Exibir erro e permanecer no login | Nara | Passou |
 | TC03 | Aceitação | Saída acima do saldo | Bloquear sem alterar saldo ou histórico | Nara | Passou |
 | TC04 | Unitário | Nome vazio | Retornar “Informe o nome do produto.” | Nara | Passou |
-| TC05 | Unitário | Saldo igual ao mínimo | Retornar “Estoque baixo” | Nara | Não iniciado |
-| TC06 | Unitário | Saldo zerado | Retornar “Sem estoque” | Nara | Não iniciado |
+| TC05 | Unitário | Saldo igual ao mínimo | Retornar “Estoque baixo” | Nara | Passou |
+| TC06 | Unitário | Saldo zerado | Retornar “Sem estoque” | Nara | Passou |
 | TC07 | Unitário | Pesquisa pelo nome | “REFRI” retorna somente “Refrigerante” | Nara | Não iniciado |
-| TC08 | Integração | Consultar produtos | Retornar somente os dois produtos do usuário | Nara | Não iniciado |
+| TC08 | Integração | Consultar produtos | Retornar somente os dois produtos do usuário | Nara | Passou |
 | TC09 | Integração | Entrada de 3 unidades | Saldo passa de 5 para 8 e entrada é registrada | Nara | Não iniciado |
 | TC10 | Integração | Saída sem saldo | Retornar erro, manter saldo e não gravar movimentação | Nara | Não iniciado |
 | TC11 | Aceitação | Cadastrar produto | Produto aparece na lista com os dados informados | Nara | Não iniciado |
@@ -271,9 +271,13 @@ Executar obterAlertaEstoque do ProdutoViewModel para esse produto.
 **Resultado esperado e critério de aprovação (Então):**
 Retornar a mensagem “Sem estoque”.
 
-**Resultado obtido:** Ainda não executado nesta etapa.
+**Resultado obtido:**
+Para o produto com saldo 0 e estoque mínimo 5,
+o método retornou “Sem estoque”.
+A execução do arquivo terminou com:
++4: All tests passed!
 
-**Status:** Não iniciado.
+**Status:** Passou.
 
 ### TC07 — Pesquisar por parte do nome
 
