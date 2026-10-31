@@ -84,11 +84,11 @@ O status abaixo corresponde à nova rodada de conferência.
 | TC04 | Unitário | Nome vazio | Retornar “Informe o nome do produto.” | Nara | Passou |
 | TC05 | Unitário | Saldo igual ao mínimo | Retornar “Estoque baixo” | Nara | Passou |
 | TC06 | Unitário | Saldo zerado | Retornar “Sem estoque” | Nara | Passou |
-| TC07 | Unitário | Pesquisa pelo nome | “REFRI” retorna somente “Refrigerante” | Nara | Não iniciado |
+| TC07 | Unitário | Pesquisa pelo nome | “REFRI” retorna somente “Refrigerante” | Nara | Passou |
 | TC08 | Integração | Consultar produtos | Retornar somente os dois produtos do usuário | Nara | Passou |
-| TC09 | Integração | Entrada de 3 unidades | Saldo passa de 5 para 8 e entrada é registrada | Nara | Não iniciado |
-| TC10 | Integração | Saída sem saldo | Retornar erro, manter saldo e não gravar movimentação | Nara | Não iniciado |
-| TC11 | Aceitação | Cadastrar produto | Produto aparece na lista com os dados informados | Nara | Não iniciado |
+| TC09 | Integração | Entrada de 3 unidades | Saldo passa de 5 para 8 e entrada é registrada | Nara | Passou |
+| TC10 | Integração | Saída sem saldo | Retornar erro, manter saldo e não gravar movimentação | Nara | Passou |
+| TC11 | Aceitação | Cadastrar produto | Produto aparece na lista com os dados informados | Nara | Passou |
 
 ### TC01 — Regra da lista de reposição
 
@@ -300,9 +300,12 @@ com a pesquisa “REFRI” e os nomes das categorias.
 **Resultado esperado e critério de aprovação (Então):**
 Retornar somente o produto “Refrigerante”.
 
-**Resultado obtido:** Ainda não executado nesta etapa.
+**Resultado obtido:**
+A pesquisa “REFRI” retornou somente “Refrigerante”,
+sem incluir “Arroz”.
+O terminal apresentou: +5: All tests passed!
 
-**Status:** Não iniciado.
+**Status:** Passou.
 
 ### TC08 — Consultar produtos do usuário no Firestore
 
@@ -362,9 +365,14 @@ A movimentação deve registrar entrada de 3 unidades,
 com os IDs corretos do produto e do usuário.
 As duas gravações devem ser concluídas juntas.
 
-**Resultado obtido:** Ainda não executado nesta etapa.
+**Resultado obtido:**
+No Firestore local, a entrada de 3 unidades atualizou
+o saldo de 5 para 8 e gravou a movimentação
+com os dados esperados.
+A execução dos testes TC09 e TC10 terminou com:
++2: All tests passed!
 
-**Status:** Não iniciado.
+**Status:** Passou.
 
 ### TC10 — Bloquear saída sem alterar o Firestore
 
@@ -395,9 +403,15 @@ Lançar StateError com a mensagem:
 O saldo deve permanecer em 5 unidades.
 O documento da movimentação não deve existir.
 
-**Resultado obtido:** Ainda não executado nesta etapa.
+**Resultado obtido:**
+No Firestore local, a saída de 6 unidades foi recusada
+com a mensagem esperada, pois o saldo era de 5.
+O saldo permaneceu em 5 e a consulta não encontrou
+movimentação com o ID reservado para a tentativa.
+A execução dos testes TC09 e TC10 terminou com:
++2: All tests passed!
 
-**Status:** Não iniciado.
+**Status:** Passou.
 
 ### TC11 — Cadastrar produto e conferir na lista
 
@@ -430,9 +444,17 @@ Não existe produto com o nome “Produto Teste TC11”.
 
 - O cadastro deve ser concluído sem erro.
 - O produto deve aparecer na lista.
-- Os detalhes devem apresentar o nome e a categoria
-  informados, saldo 5, estoque mínimo 2 e preço 2,99.
+- Os dados salvos devem corresponder aos informados:
+  nome “Produto Teste TC11”, categoria Alimentos,
+  quantidade 5, estoque mínimo 2, preço R$ 2,99
+  e controle de validade desativado.
 
-**Resultado obtido:** Ainda não executado nesta etapa.
+**Resultado obtido:**
+O aplicativo exibiu “Produto salvo com sucesso.”
+e o produto “Produto Teste TC11” apareceu na lista.
 
-**Status:** Não iniciado.
+Na tela de edição, foram conferidos os dados salvos:
+categoria Alimentos, preço R$ 2,99, quantidade 5,
+estoque mínimo 2 e controle de validade desativado.
+
+**Status:** Passou.

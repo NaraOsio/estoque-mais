@@ -102,4 +102,25 @@ void main() {
 
     expect(resultado, 'Sem estoque');
   });
+  test('TC07 - Pesquisa parte do nome sem diferenciar maiúsculas', () {
+    final viewModel = ProdutoViewModel(
+      repository: RepositorioSemBanco(),
+    );
+
+    final produtos = [
+      criarProdutoParaTeste(id: 'Refrigerante', quantidade: 5),
+      criarProdutoParaTeste(id: 'Arroz', quantidade: 5),
+    ];
+
+    final resultado = viewModel.pesquisarProdutos(
+      produtos: produtos,
+      pesquisa: 'REFRI',
+      nomesCategorias: {'categoria-teste': 'Alimentos'},
+    );
+
+    expect(
+      resultado.map((produto) => produto.id),
+      unorderedEquals(['Refrigerante']),
+    );
+  });
 }
