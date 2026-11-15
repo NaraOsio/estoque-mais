@@ -170,25 +170,39 @@ class _ListaProdutosPageState extends State<ListaProdutosPage> {
       appBar: AppBar(
         title: const Text('Produtos'),
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(72),
+          preferredSize: const Size.fromHeight(120),
           child: Padding(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-            child: TextField(
-              onChanged: (texto) {
-                setState(() {
-                  _pesquisa = texto;
-                });
-              },
-              decoration: InputDecoration(
-                hintText: 'Pesquisar por nome ou categoria',
-                prefixIcon: const Icon(Icons.search_rounded),
-                filled: true,
-                fillColor: Theme.of(context).colorScheme.surface,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
+            child: Column(
+              children: [
+                TextField(
+                  onChanged: (texto) {
+                    setState(() {
+                      _pesquisa = texto;
+                    });
+                  },
+                  decoration: InputDecoration(
+                    hintText: 'Pesquisar por nome ou categoria',
+                    prefixIcon: const Icon(Icons.search_rounded),
+                    filled: true,
+                    fillColor: Theme.of(context).colorScheme.surface,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
                 ),
-              ),
+                const SizedBox(height: 8),
+                SizedBox(
+                  width: double.infinity,
+                  height: 40,
+                  child: FilledButton.icon(
+                    onPressed: _abrirMovimentacao,
+                    icon: const Icon(Icons.inventory_2_outlined),
+                    label: const Text('Entrada e saída'),
+                  ),
+                ),
+              ],
             ),
           ),
         ),
@@ -204,12 +218,6 @@ class _ListaProdutosPageState extends State<ListaProdutosPage> {
             icon: const Icon(Icons.qr_code_scanner_rounded),
             iconSize: 28,
             tooltip: 'Consultar produto por código',
-          ),
-          IconButton(
-            onPressed: _abrirMovimentacao,
-            icon: const Icon(Icons.swap_vert_rounded),
-            iconSize: 28,
-            tooltip: 'Movimentar estoque',
           ),
           PopupMenuButton<_AcaoMenu>(
             onSelected: _executarAcaoMenu,
@@ -435,10 +443,18 @@ class _ListaProdutosPageState extends State<ListaProdutosPage> {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: _abrirCadastroProduto,
-        tooltip: 'Cadastrar produto',
-        child: const Icon(Icons.add_rounded),
+        backgroundColor: Colors.orange,
+        foregroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        icon: const Icon(Icons.add_rounded),
+        label: const Text(
+          'Cadastrar produto',
+          style: TextStyle(fontWeight: FontWeight.w600),
+        ),
       ),
     );
   }

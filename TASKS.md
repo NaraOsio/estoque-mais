@@ -458,3 +458,13 @@ categoria Alimentos, preço R$ 2,99, quantidade 5,
 estoque mínimo 2 e controle de validade desativado.
 
 **Status:** Passou.
+
+## Ajustes após validação com usuários — Aula 16
+
+- [x] FB01 — Identificar o botão de cadastro com o texto
+  “Cadastrar produto”, após U1 ter dificuldade em reconhecer
+  a função do botão “+”.
+
+- [x] FB05 — Tornar visível o acesso “Entrada e saída” na tela
+  de produtos, após dois participantes precisarem de ajuda
+  para encontrar o caminho de movimentação.
