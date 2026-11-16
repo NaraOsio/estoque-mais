@@ -1,5 +1,6 @@
 import '../model/movimentacao.dart';
 import '../repository/movimentacao_repository.dart';
+import 'package:flutter/foundation.dart';
 
 class MovimentacaoViewModel {
   final MovimentacaoRepository _repository;
@@ -52,7 +53,9 @@ class MovimentacaoViewModel {
       return null;
     } on StateError catch (erro) {
       return erro.message.toString();
-    } catch (_) {
+    } catch (erro, pilha) {
+      debugPrint('Erro ao registrar movimentação: $erro');
+      debugPrintStack(stackTrace: pilha);
       return 'Não foi possível registrar a movimentação. Tente novamente.';
     }
   }

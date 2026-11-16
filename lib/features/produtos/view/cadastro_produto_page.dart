@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -155,15 +156,23 @@ if (produto == null &&
             ? 'Dados encontrados, sem foto. Confira antes de salvar.'
             : 'Dados encontrados. Confira antes de salvar.';
       });
-    } catch (_) {
+    } on TimeoutException {
       if (!mounted) {
         return;
       }
 
       setState(() {
         _mensagemBusca =
-        'Não foi possível buscar os dados. '
-            'Tente novamente ou preencha manualmente.';
+        'A consulta demorou muito. Verifique sua conexão e tente novamente.';
+      });
+    } on SocketException {
+      if (!mounted) {
+        return;
+      }
+
+      setState(() {
+        _mensagemBusca =
+        'Não foi possível conectar. Verifique sua internet e tente novamente.';
       });
     } finally {
       if (mounted) {
